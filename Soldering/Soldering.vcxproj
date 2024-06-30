@@ -128,11 +128,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="obj\Board.h" />
+    <ClInclude Include="obj\Circuit.h" />
+    <ClInclude Include="obj\Joint.h" />
+    <ClInclude Include="obj\types.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Soldering.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="obj\Board.cpp" />
+    <ClCompile Include="obj\Circuit.cpp" />
+    <ClCompile Include="obj\Joint.cpp" />
     <ClCompile Include="Soldering.cpp" />
   </ItemGroup>
   <ItemGroup>

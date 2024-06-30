@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\obj">
+      <UniqueIdentifier>{cc20d6ff-5054-4d0d-8ef1-ab882ff033fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -27,10 +30,31 @@
     <ClInclude Include="Soldering.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="obj\Joint.h">
+      <Filter>Source Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="obj\types.h">
+      <Filter>Source Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="obj\Circuit.h">
+      <Filter>Source Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="obj\Board.h">
+      <Filter>Source Files\obj</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Soldering.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\Joint.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\Circuit.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\Board.cpp">
+      <Filter>Source Files\obj</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,10 @@
 #include "framework.h"
 #include "Soldering.h"
 
+#include "obj/Joint.h"
+#include "obj/Circuit.h"
+#include "obj/Board.h"
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -143,10 +147,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_PAINT:
-        {
+        {   
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
+
+            RECT rect;
+            GetClientRect(hWnd, &rect);
+            
+            POINT pos;
+            pos.x = 0;
+            pos.y = 0;
+
+            Board board(pos, 130);
+            board.TestPaint(hdc, rect.right - rect.left, rect.bottom - rect.top);
+           
             EndPaint(hWnd, &ps);
         }
         break;
