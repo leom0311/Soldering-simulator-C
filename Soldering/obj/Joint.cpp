@@ -36,7 +36,19 @@ void rotatePoint(double x1, double y1, double x2, double y2, double theta, doubl
 	*rotatedY = rotatedTranslatedY + y1;
 }
 
+Joint::Joint() {
+	m_bFlip = FALSE;
+}
+
 Joint::Joint(POINT org, int length0, int length1) {
+	SetParameters(org, length0, length1, FALSE);
+}
+
+Joint::~Joint() {
+
+}
+
+void Joint::SetParameters(POINT org, int length0, int length1, BOOL flip) {
 	m_posOrg = org;
 	m_nLength0 = length0;
 	m_nLength1 = length1;
@@ -47,11 +59,7 @@ Joint::Joint(POINT org, int length0, int length1) {
 	m_posMiddle.x = org.x;
 	m_posMiddle.y = org.y + m_nLength0;
 
-	m_bFlip = FALSE;
-}
-
-Joint::~Joint() {
-
+	m_bFlip = flip;
 }
 
 void Joint::GetPositions(POINT& org, POINT& middle, POINT& target) {
@@ -86,7 +94,7 @@ void Joint::SetTarget(POINT target) {
 	}
 
 	m_posTarget.x = m_posOrg.x;
-	m_posTarget.y = d;
+	m_posTarget.y = m_posOrg.y + d;
 
 	int x1 = m_posOrg.x;
 	int y1 = m_posOrg.y;

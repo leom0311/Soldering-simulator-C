@@ -13,11 +13,12 @@ private:
 
 	BOOL m_bFlip;
 public:
-	Joint() = delete;
+	Joint();
 	Joint(POINT org, int length0, int length1);
 	~Joint();
 
 	void SetTarget(POINT target);
+	void SetParameters(POINT org, int length0, int length1, BOOL flip);
 	void GetPositions(POINT& org, POINT& middle, POINT& target);
 
 	void TestPaint(HDC hdc, int width, int height);

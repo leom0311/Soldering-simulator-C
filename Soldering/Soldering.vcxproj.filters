@@ -42,6 +42,9 @@
     <ClInclude Include="obj\Board.h">
       <Filter>Source Files\obj</Filter>
     </ClInclude>
+    <ClInclude Include="obj\Worker.h">
+      <Filter>Source Files\obj</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Soldering.cpp">
@@ -54,6 +57,9 @@
       <Filter>Source Files\obj</Filter>
     </ClCompile>
     <ClCompile Include="obj\Board.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\Worker.cpp">
       <Filter>Source Files\obj</Filter>
     </ClCompile>
   </ItemGroup>

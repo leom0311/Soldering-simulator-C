@@ -132,6 +132,7 @@
     <ClInclude Include="obj\Circuit.h" />
     <ClInclude Include="obj\Joint.h" />
     <ClInclude Include="obj\types.h" />
+    <ClInclude Include="obj\Worker.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Soldering.h" />
     <ClInclude Include="targetver.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="obj\Board.cpp" />
     <ClCompile Include="obj\Circuit.cpp" />
     <ClCompile Include="obj\Joint.cpp" />
+    <ClCompile Include="obj\Worker.cpp" />
     <ClCompile Include="Soldering.cpp" />
   </ItemGroup>
   <ItemGroup>

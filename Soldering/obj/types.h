@@ -1,6 +1,8 @@
 #pragma once
 
 #include <windows.h>
+#include <gdiplus.h>
+using namespace Gdiplus;
 
 #define X(x, w) ((x) + (w) / 2)
 #define Y(y, h) (-(y) + (h) / 2)
