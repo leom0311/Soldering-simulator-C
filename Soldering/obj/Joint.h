@@ -2,8 +2,7 @@
 #include "types.h"
 
 class Joint {
-private:
-	
+protected:
 	POINT m_posOrg;
 	POINT m_posTarget;
 	POINT m_posMiddle;
@@ -20,6 +19,4 @@ public:
 	void SetTarget(POINT target);
 	void SetParameters(POINT org, int length0, int length1, BOOL flip);
 	void GetPositions(POINT& org, POINT& middle, POINT& target);
-
-	void TestPaint(HDC hdc, int width, int height);
 };

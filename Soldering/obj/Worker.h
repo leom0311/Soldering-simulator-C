@@ -18,9 +18,10 @@ private:
 	int m_nArmLength_0;
 	int m_nArmLength_1;
 public:
-	Worker() = delete;
+	Worker();
 	Worker(POINT posHead, int headRadius);
 	~Worker();
 
+	void SetParameters(POINT posHead, int headRadius);
 	void TestPaint(Graphics* graphics, int w, int h);
 };

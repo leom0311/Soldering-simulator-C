@@ -2,21 +2,36 @@
 #include "types.h"
 #include "Circuit.h"
 
+enum {
+	ST_BOARD_stop = 0,
+	ST_BOARD_rotating
+};
+
 class Board {
 private:
-	Circuit m_ActiveCircuit;
-	Circuit m_PendingCircuit;
+	BOOL m_nState;
+
+	Circuit *m_ActiveCircuit;
+	Circuit* m_PendingCircuit;
 
 	POINT m_position;
 	int m_nRadius;
 	double m_dAngle;
+
+	float m_fPeriod;
 public:
-	Board() = delete;
-	Board(POINT pos, int radius);
+	Board();
+	Board(POINT pos, int radius, float period);
 	~Board();
 
 	void SetAngle(double angle);
+	void SetParameters(POINT pos, int radius, float period);
 	void InitCircuits();
+	void Update(DWORD dw, Graphics* graphics, int w, int h);
+	int GetState();
+	void RemoveCompleted();
+	void SetSoldered(int n);
+	void GetSolderingPath(POINT& pos0, POINT& pos1, POINT& pos2);
 
 	void TestPaint(Graphics* graphics, int w, int h);
 };

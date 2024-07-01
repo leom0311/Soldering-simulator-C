@@ -45,6 +45,12 @@
     <ClInclude Include="obj\Worker.h">
       <Filter>Source Files\obj</Filter>
     </ClInclude>
+    <ClInclude Include="obj\Solder.h">
+      <Filter>Source Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="obj\Automate.h">
+      <Filter>Source Files\obj</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Soldering.cpp">
@@ -60,6 +66,12 @@
       <Filter>Source Files\obj</Filter>
     </ClCompile>
     <ClCompile Include="obj\Worker.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\Solder.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="obj\Automate.cpp">
       <Filter>Source Files\obj</Filter>
     </ClCompile>
   </ItemGroup>

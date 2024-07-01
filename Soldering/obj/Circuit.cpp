@@ -70,12 +70,9 @@ void Circuit::GetSolderingPoint(int idx, POINT& lt, POINT& lb, POINT& rt, POINT&
 void Circuit::Rotate(POINT pos, double angle) {
 	m_rotOrigin = pos;
 	m_rotAngle = angle;
-
-	
 }
 
-void DrawRotatedRectangle(Graphics* graphics, Pen& pen, SolidBrush& brush, RectF rect, PointF rotationPoint, float angle)
-{
+void DrawRotatedRectangle(Graphics* graphics, Pen& pen, SolidBrush& brush, RectF rect, PointF rotationPoint, float angle) {
 	Matrix originalTransform;
 	graphics->GetTransform(&originalTransform);
 

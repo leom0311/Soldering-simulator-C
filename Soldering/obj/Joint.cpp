@@ -68,18 +68,6 @@ void Joint::GetPositions(POINT& org, POINT& middle, POINT& target) {
 	target = m_posTarget;
 }
 
-void Joint::TestPaint(HDC hDC, int w, int h) {
-	POINT pt;
-	MoveToEx(hDC, X(m_posOrg.x, w), Y(m_posOrg.y, h), &pt);
-	LineTo(hDC, X(m_posMiddle.x, w), Y(m_posMiddle.y, h));
-	LineTo(hDC, X(m_posTarget.x, w), Y(m_posTarget.y, h));
-
-	int radius = 5;
-	Ellipse(hDC, X(m_posOrg.x, w) - radius, Y(m_posOrg.y, h) - radius, X(m_posOrg.x, w) + radius, Y(m_posOrg.y, h) + radius);
-	Ellipse(hDC, X(m_posMiddle.x, w) - radius, Y(m_posMiddle.y, h) - radius, X(m_posMiddle.x, w) + radius, Y(m_posMiddle.y, h) + radius);
-	Ellipse(hDC, X(m_posTarget.x, w) - radius, Y(m_posTarget.y, h) - radius, X(m_posTarget.x, w) + radius, Y(m_posTarget.y, h) + radius);
-}
-
 void Joint::SetTarget(POINT target) {
 	int d = distance(m_posOrg, target);
 	double theta;

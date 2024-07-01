@@ -128,9 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="obj\Automate.h" />
     <ClInclude Include="obj\Board.h" />
     <ClInclude Include="obj\Circuit.h" />
     <ClInclude Include="obj\Joint.h" />
+    <ClInclude Include="obj\Solder.h" />
     <ClInclude Include="obj\types.h" />
     <ClInclude Include="obj\Worker.h" />
     <ClInclude Include="Resource.h" />
@@ -138,9 +140,11 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="obj\Automate.cpp" />
     <ClCompile Include="obj\Board.cpp" />
     <ClCompile Include="obj\Circuit.cpp" />
     <ClCompile Include="obj\Joint.cpp" />
+    <ClCompile Include="obj\Solder.cpp" />
     <ClCompile Include="obj\Worker.cpp" />
     <ClCompile Include="Soldering.cpp" />
   </ItemGroup>

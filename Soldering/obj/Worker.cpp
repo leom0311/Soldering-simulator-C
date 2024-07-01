@@ -2,15 +2,25 @@
 #include <windows.h>
 #include <math.h>
 
+Worker::Worker() {
+}
+
 Worker::Worker(POINT posHead, int headRadius) {
-	m_posHead		= posHead;
-	m_nHeadRadius	= headRadius;
-	m_posBody		= posHead;
-	m_posBody.y     -= m_nHeadRadius;
-	m_nBodyHeight	= headRadius * 1.1;
-	m_nBodyWidth	= m_nBodyHeight * 2.8;
-	m_nArmLength_0	= headRadius * 2.5;
-	m_nArmLength_1	= headRadius * 2.8;
+	SetParameters(posHead, headRadius);
+}
+
+Worker::~Worker() {
+}
+
+void Worker::SetParameters(POINT posHead, int headRadius) {
+	m_posHead = posHead;
+	m_nHeadRadius = headRadius;
+	m_posBody = posHead;
+	m_posBody.y -= m_nHeadRadius;
+	m_nBodyHeight = headRadius * 1.1;
+	m_nBodyWidth = m_nBodyHeight * 2.8;
+	m_nArmLength_0 = headRadius * 2.5;
+	m_nArmLength_1 = headRadius * 2.8;
 
 
 	POINT pos;
@@ -21,9 +31,6 @@ Worker::Worker(POINT posHead, int headRadius) {
 	pos.x += 2 * m_nBodyWidth - 20;
 	pos.y = m_posBody.y - m_nBodyHeight * 2 + 10;
 	m_rightArm.SetParameters(pos, m_nArmLength_0, m_nArmLength_1, TRUE);
-}
-
-Worker::~Worker() {
 }
 
 void DrawRotatedEllipse(Graphics* graphics, SolidBrush& brush, RectF& rect, float angle) {
