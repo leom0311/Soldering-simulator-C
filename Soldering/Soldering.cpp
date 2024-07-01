@@ -3,6 +3,7 @@
 
 #pragma comment (lib,"Gdiplus.lib")
 #include "obj/Worker.h"
+#include "obj/Board.h"
 
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -91,8 +92,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         POINT pos;
         pos.x = 0;
-        pos.y = -100;
+        pos.y = 80;
 
+        Board board(pos, 150);
+        board.SetAngle(0 * PI / 180);
+        board.TestPaint(&graphics, rect.right - rect.left, rect.bottom - rect.top);
+        
+        pos.x = 0;
+        pos.y = -100;
+        
         Worker worker(pos, 40);
         worker.TestPaint(&graphics, rect.right - rect.left, rect.bottom - rect.top);
 

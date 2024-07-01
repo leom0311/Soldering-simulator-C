@@ -62,22 +62,6 @@ void Circuit::GetSolderingPoint(int idx, POINT& lt, POINT& lb, POINT& rt, POINT&
 
 		x += (width + offset) + 1;
 		if (i == idx) {
-			POINT_D ltRot, lbRot, rtRot, rbRot;
-
-			rotatePoint(m_rotOrigin.x, m_rotOrigin.y, lt.x, lt.y, m_rotAngle, &ltRot.x, &ltRot.y);
-			rotatePoint(m_rotOrigin.x, m_rotOrigin.y, lb.x, lb.y, m_rotAngle, &lbRot.x, &lbRot.y);
-			rotatePoint(m_rotOrigin.x, m_rotOrigin.y, rt.x, rt.y, m_rotAngle, &rtRot.x, &rtRot.y);
-			rotatePoint(m_rotOrigin.x, m_rotOrigin.y, rb.x, rb.y, m_rotAngle, &rbRot.x, &rbRot.y);
-
-			lt.x = ltRot.x;
-			lt.y = ltRot.y;
-			lb.x = lbRot.x;
-			lb.y = lbRot.y;
-			rb.x = rbRot.x;
-			rb.y = rbRot.y;
-			rt.x = rtRot.x;
-			rt.y = rtRot.y;
-
 			break;
 		}
 	}
@@ -86,48 +70,48 @@ void Circuit::GetSolderingPoint(int idx, POINT& lt, POINT& lb, POINT& rt, POINT&
 void Circuit::Rotate(POINT pos, double angle) {
 	m_rotOrigin = pos;
 	m_rotAngle = angle;
+
+	
 }
 
-void Circuit::TestPaint(HDC hDC, int w, int h) {
-	POINT leftTop, leftBottom, rightTop, rightBottom;
-	POINT_D leftTopRot, leftBottomRot, rightTopRot, rightBottomRot;
-	leftTop.x		= m_position.x - m_nWidth / 2;
-	leftTop.y		= m_position.y + m_nHeight / 2;
-	leftBottom.x	= m_position.x - m_nWidth / 2;
-	leftBottom.y	= m_position.y - m_nHeight / 2;
-	rightTop.x		= m_position.x + m_nWidth / 2;
-	rightTop.y		= m_position.y + m_nHeight / 2;
-	rightBottom.x	= m_position.x + m_nWidth / 2;
-	rightBottom.y	= m_position.y - m_nHeight / 2;
+void DrawRotatedRectangle(Graphics* graphics, Pen& pen, SolidBrush& brush, RectF rect, PointF rotationPoint, float angle)
+{
+	Matrix originalTransform;
+	graphics->GetTransform(&originalTransform);
 
-	rotatePoint(m_rotOrigin.x, m_rotOrigin.y, leftTop.x,		leftTop.y,		m_rotAngle, &leftTopRot.x,		&leftTopRot.y);
-	rotatePoint(m_rotOrigin.x, m_rotOrigin.y, leftBottom.x,		leftBottom.y,	m_rotAngle, &leftBottomRot.x,	&leftBottomRot.y);
-	rotatePoint(m_rotOrigin.x, m_rotOrigin.y, rightTop.x,		rightTop.y,		m_rotAngle, &rightTopRot.x,		&rightTopRot.y);
-	rotatePoint(m_rotOrigin.x, m_rotOrigin.y, rightBottom.x,	rightBottom.y,	m_rotAngle, &rightBottomRot.x,	&rightBottomRot.y);
+	Matrix matrix;
+	matrix.Translate(rotationPoint.X, rotationPoint.Y);
+	matrix.Rotate(-angle);
+	matrix.Translate(-rotationPoint.X, -rotationPoint.Y);
 
-	POINT pt;
-	MoveToEx(hDC, X(leftBottomRot.x, w),	Y(leftBottomRot.y, h), &pt);
-	LineTo(hDC, X(leftTopRot.x, w),			Y(leftTopRot.y, h));
-	LineTo(hDC, X(rightTopRot.x, w),		Y(rightTopRot.y, h));
-	LineTo(hDC, X(rightBottomRot.x, w),		Y(rightBottomRot.y, h));
-	LineTo(hDC, X(leftBottomRot.x, w),		Y(leftBottomRot.y, h));
+	graphics->SetTransform(&matrix);
+	graphics->FillRectangle(&brush, rect);
+	graphics->DrawRectangle(&pen, rect);
+	graphics->SetTransform(&originalTransform);
+}
+
+void Circuit::TestPaint(Graphics * graphics, int w, int h) {
+	double x;
+	double y;
+	rotatePoint(m_rotOrigin.x, m_rotOrigin.y, m_position.x, m_position.y, m_rotAngle, &x, &y);
 	
-	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-	HPEN hOldPen = NULL;
+	POINT leftTop;
+	leftTop.x		= x - m_nWidth / 2;
+	leftTop.y		= y + m_nHeight / 2;
+
+	SolidBrush brush(Color(255, 255, 255, 255));
+	Pen blackPen(Color(255, 0, 0, 0), 2);
+	Pen redPen(Color(255, 255, 0, 0), 2);
+
+	DrawRotatedRectangle(graphics, blackPen, brush, RectF(X(leftTop.x, w), Y(leftTop.y, h), m_nWidth, m_nHeight), PointF(X(x, w), Y(y, h)), m_rotAngle * 180 / PI);
+
 	for (int i = 0; i < SOLDER_PNT; i++) {
 		POINT lt, lb, rt, rb;
 		GetSolderingPoint(i, lt, lb, rt, rb);
-		if (i == (SOLDER_PNT - m_nSoldered)) {
-			hOldPen = (HPEN)SelectObject(hDC, hPen);
-		}		
-		MoveToEx(hDC, X(lt.x, w), Y(lt.y, h), &pt);
-		LineTo(hDC, X(lb.x, w), Y(lb.y, h));
-		LineTo(hDC, X(rb.x, w), Y(rb.y, h));
-		LineTo(hDC, X(rt.x, w), Y(rt.y, h));
-		LineTo(hDC, X(lt.x, w), Y(lt.y, h));
+		int width = rt.x - lt.x;
+		int height = rt.y - rb.y;
+
+		rotatePoint(m_rotOrigin.x, m_rotOrigin.y, lt.x, lt.y, m_rotAngle, &x, &y);
+		DrawRotatedRectangle(graphics, (i < (SOLDER_PNT - m_nSoldered) ? blackPen : redPen), brush, RectF(X(x, w), Y(y, h), width, height), PointF(X(x, w), Y(y, h)), m_rotAngle * 180 / PI);
 	}
-	if (hOldPen) {
-		SelectObject(hDC, hOldPen);
-	}
-	DeleteObject(hPen);	
 }

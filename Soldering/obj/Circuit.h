@@ -26,5 +26,6 @@ public:
 	BOOL GetVisible();
 	void SetSoldered(int soldered);
 	int GetSoldered();
-	void TestPaint(HDC hDC, int w, int h);
+
+	void TestPaint(Graphics* graphics, int w, int h);
 };

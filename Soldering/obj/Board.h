@@ -18,5 +18,5 @@ public:
 	void SetAngle(double angle);
 	void InitCircuits();
 
-	void TestPaint(HDC hDC, int w, int h);
+	void TestPaint(Graphics* graphics, int w, int h);
 };
