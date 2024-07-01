@@ -4,7 +4,7 @@
 
 Worker::Worker() {
 	m_nState = ST_WORKER_finished;
-	m_fPeriod = 3000.0;
+	m_fPeriod = 1800.0;
 }
 
 Worker::Worker(POINT posHead, int headRadius) {
@@ -83,35 +83,68 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 	orgRightTarget.x = org.x - m_nHeadRadius * 2;
 	orgRightTarget.y = org.y + m_nHeadRadius * 4.5;
 
+	POINT rightTarget, leftTarget;
+	rightTarget.x = orgRightTarget.x;
+	rightTarget.y = orgRightTarget.y;
+
+	leftTarget.x = orgLeftTarget.x;
+	leftTarget.y = orgLeftTarget.y;
 
 	if (m_nState > ST_WORKER_pending) {
 		m_fGone += dt;
 		if (m_fGone <= m_fPeriod / 3.0) {
 			SetState(ST_WORKER_removing);
+			if (m_fGone <= m_fPeriod / 6.0) {
+				rightTarget.x = linePoint(orgRightTarget.x, 0, orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 6.0, m_fGone);
+				rightTarget.y = linePoint(orgRightTarget.y, 0, orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 6.0, m_fGone);
+			}
+			else {
+				rightTarget.x = linePoint(orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 6.0, orgRightTarget.x, m_fPeriod / 3.0, m_fGone);
+				rightTarget.y = linePoint(orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 6.0, orgRightTarget.y, m_fPeriod / 3.0, m_fGone);
+			}
 		}
 		else if (m_fGone <= m_fPeriod * 2.0 / 3.0) {
-			SetState(ST_WORKER_set_circuit);
+			if (m_fGone <= m_fPeriod * 3.0 / 6.0) {
+				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 1.0 / 3.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 6.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 1.0 / 3.0, orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 6.0, m_fGone);
+			}
+			else {
+				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 6.0, orgLeftTarget.x, m_fPeriod * 2.0 / 3.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 6.0, orgLeftTarget.y, m_fPeriod * 2.0 / 3.0, m_fGone);
+			}
 		}
 		else if (m_fGone < m_fPeriod) {
-			SetState(ST_WORKER_fill_circuit);
+			if (m_fGone <= m_fPeriod * 5.0 / 6.0) {
+				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 2.0 / 3.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 5.0 / 6.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 2.0 / 3.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 5.0 / 6.0, m_fGone);
+			}
+			else {
+				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 5.0 / 6.0, orgLeftTarget.x, m_fPeriod * 3.0 / 3.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 5.0 / 6.0, orgLeftTarget.y, m_fPeriod * 3.0 / 3.0, m_fGone);
+			}
+			SetState(ST_WORKER_set_circuit);
+			m_fFinishPending = 0.0;
 		}
 		else {
-			SetState(ST_WORKER_finished);
+			SetState(ST_WORKER_fill_circuit);
+			m_fFinishPending += dt;
+			if (m_fFinishPending >= 500) {
+				SetState(ST_WORKER_finished);
+			}
 		}
 	}
 
-	m_leftArm.SetTarget(orgLeftTarget);
-	m_leftArm.GetPositions(org, middle, target);
-	RectF rect(X(org.x, w), Y(org.y, h), distance(middle, org), 32);
-	DrawRotatedEllipse(graphics, brushBody, rect, atan2(middle.y - org.y, middle.x - org.x));
-	RectF rect1(X(middle.x, w), Y(middle.y, h), distance(middle, target), 28);
-	DrawRotatedEllipse(graphics, brushBody, rect1, atan2(target.y - middle.y, target.x - middle.x));
-
-
-	m_rightArm.SetTarget(orgRightTarget);
+	m_rightArm.SetTarget(rightTarget);
 	m_rightArm.GetPositions(org, middle, target);
 	RectF rect2(X(org.x, w), Y(org.y, h), distance(middle, org), 32);
 	DrawRotatedEllipse(graphics, brushBody, rect2, atan2(middle.y - org.y, middle.x - org.x));
 	RectF rect3(X(middle.x, w), Y(middle.y, h), distance(middle, target), 28);
 	DrawRotatedEllipse(graphics, brushBody, rect3, atan2(target.y - middle.y, target.x - middle.x));
+
+	m_leftArm.SetTarget(leftTarget);
+	m_leftArm.GetPositions(org, middle, target);
+	RectF rect(X(org.x, w), Y(org.y, h), distance(middle, org), 32);
+	DrawRotatedEllipse(graphics, brushBody, rect, atan2(middle.y - org.y, middle.x - org.x));
+	RectF rect1(X(middle.x, w), Y(middle.y, h), distance(middle, target), 28);
+	DrawRotatedEllipse(graphics, brushBody, rect1, atan2(target.y - middle.y, target.x - middle.x));
 }

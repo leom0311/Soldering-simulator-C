@@ -30,6 +30,8 @@ private:
 
 	float m_fGone;
 	float m_fPeriod;
+
+	float m_fFinishPending;
 public:
 	Worker();
 	Worker(POINT posHead, int headRadius);
