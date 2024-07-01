@@ -3,6 +3,7 @@
 Circuit::Circuit() {
 	m_nSoldered = 0;
 	m_bVisible = TRUE;
+	m_bItemVisible = TRUE;
 }
 
 Circuit::Circuit(POINT pos, int width, int height) {
@@ -12,6 +13,7 @@ Circuit::Circuit(POINT pos, int width, int height) {
 
 	m_nSoldered = 0;
 	m_bVisible = TRUE;
+	m_bItemVisible = TRUE;
 }
 
 Circuit::~Circuit() {
@@ -87,7 +89,18 @@ void DrawRotatedRectangle(Graphics* graphics, Pen& pen, SolidBrush& brush, RectF
 	graphics->SetTransform(&originalTransform);
 }
 
+void Circuit::SetItemVisible(BOOL visible) {
+	m_bItemVisible = visible;
+}
+
+BOOL Circuit::GetItemVisible() {
+	return m_bItemVisible;
+}
+
 void Circuit::TestPaint(Graphics * graphics, int w, int h) {
+	if (!m_bVisible) {
+		return;
+	}
 	double x;
 	double y;
 	rotatePoint(m_rotOrigin.x, m_rotOrigin.y, m_position.x, m_position.y, m_rotAngle, &x, &y);
@@ -102,13 +115,15 @@ void Circuit::TestPaint(Graphics * graphics, int w, int h) {
 
 	DrawRotatedRectangle(graphics, blackPen, brush, RectF(X(leftTop.x, w), Y(leftTop.y, h), m_nWidth, m_nHeight), PointF(X(x, w), Y(y, h)), m_rotAngle * 180 / PI);
 
-	for (int i = 0; i < SOLDER_PNT; i++) {
-		POINT lt, lb, rt, rb;
-		GetSolderingPoint(i, lt, lb, rt, rb);
-		int width = rt.x - lt.x;
-		int height = rt.y - rb.y;
+	if (m_bItemVisible) {
+		for (int i = 0; i < SOLDER_PNT; i++) {
+			POINT lt, lb, rt, rb;
+			GetSolderingPoint(i, lt, lb, rt, rb);
+			int width = rt.x - lt.x;
+			int height = rt.y - rb.y;
 
-		rotatePoint(m_rotOrigin.x, m_rotOrigin.y, lt.x, lt.y, m_rotAngle, &x, &y);
-		DrawRotatedRectangle(graphics, (i < (SOLDER_PNT - m_nSoldered) ? blackPen : redPen), brush, RectF(X(x, w), Y(y, h), width, height), PointF(X(x, w), Y(y, h)), m_rotAngle * 180 / PI);
+			rotatePoint(m_rotOrigin.x, m_rotOrigin.y, lt.x, lt.y, m_rotAngle, &x, &y);
+			DrawRotatedRectangle(graphics, (i < (SOLDER_PNT - m_nSoldered) ? blackPen : redPen), brush, RectF(X(x, w), Y(y, h), width, height), PointF(X(x, w), Y(y, h)), m_rotAngle * 180 / PI);
+		}
 	}
 }

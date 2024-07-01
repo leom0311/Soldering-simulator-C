@@ -29,9 +29,14 @@ public:
 	void InitCircuits();
 	void Update(DWORD dw, Graphics* graphics, int w, int h);
 	int GetState();
+	void SetState(int state);
+	BOOL SolderingFinished();
 	void RemoveCompleted();
 	void SetSoldered(int n);
 	void GetSolderingPath(POINT& pos0, POINT& pos1, POINT& pos2);
+
+	void CircuitAttach();
+	void CircuitItemAttach();
 
 	void TestPaint(Graphics* graphics, int w, int h);
 };

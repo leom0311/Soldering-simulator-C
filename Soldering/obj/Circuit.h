@@ -1,8 +1,6 @@
 #pragma once
 #include "types.h"
 
-#define SOLDER_PNT (4)
-
 class Circuit {
 private:
 	POINT m_position;
@@ -11,6 +9,7 @@ private:
 
 	int m_nSoldered;
 	BOOL m_bVisible;
+	BOOL m_bItemVisible;
 
 	POINT m_rotOrigin;
 	double m_rotAngle;
@@ -24,6 +23,10 @@ public:
 	void SetParameters(POINT pos, int width, int height);
 	void SetVisible(BOOL visible);
 	BOOL GetVisible();
+
+	void SetItemVisible(BOOL visible);
+	BOOL GetItemVisible();
+
 	void SetSoldered(int soldered);
 	int GetSoldered();
 

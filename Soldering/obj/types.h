@@ -10,6 +10,7 @@ using namespace Gdiplus;
 #define Y(y, h) (-(y) + (h) / 2)
 
 #define PI (3.141592654)
+#define SOLDER_PNT (4)
 
 typedef struct POINT_D {
 	double x;
@@ -21,3 +22,4 @@ POINT calculateThirdPoint(POINT A, POINT B, double AB, double BC, double CA);
 void rotatePoint(double x1, double y1, double x2, double y2, double theta, double* rotatedX, double* rotatedY);
 
 void DrawRotatedRectangle(Graphics* graphics, Pen& pen, SolidBrush& brush, RectF rect, PointF rotationPoint, float angle);
+float linePoint(int x1, float t1, int x2, float t2, float t);

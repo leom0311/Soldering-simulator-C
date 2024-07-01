@@ -2,9 +2,9 @@
 #include <math.h>
 
 Solder::Solder() {
-	m_nState = ST_SOLDER_moving;
+	m_nState = ST_SOLDER_stop;
 	m_fGone = 0.0;
-	m_fPeriod = 1000.0;
+	m_fPeriod = 1500.0;
 }
 
 Solder::~Solder() {
@@ -23,8 +23,12 @@ void Solder::SetMovingPath(POINT p0, POINT p1, POINT p2) {
 	m_pos2 = p2;
 }
 
+int Solder::GetSoldered() {
+	return m_nSoldered;
+}
+
 void Solder::Update(DWORD dt, Graphics* graphics, int w, int h) {
-	if (m_nState == ST_SOLDER_stop) {
+	if (m_nState != ST_SOLDER_moving) {
 		TestPaint(graphics, w, h);
 		return;
 	}
@@ -35,14 +39,22 @@ void Solder::Update(DWORD dt, Graphics* graphics, int w, int h) {
 		newTarget.x = linePoint(m_pos0.x, 0, m_pos1.x, m_fPeriod / 3.0, m_fGone);
 		newTarget.y = linePoint(m_pos0.y, 0, m_pos1.y, m_fPeriod / 3.0, m_fGone);
 		SetTarget(newTarget);
+
+		m_nSoldered = 0;
 	}
 	else if (m_fGone <= m_fPeriod * 2.0 / 3.0) {
+		if (m_nSoldered == 0) {
+			m_nSoldered = 1;
+		}
 		POINT newTarget;
 		newTarget.x = linePoint(m_pos1.x, m_fPeriod / 3.0, m_pos2.x, m_fPeriod * 2.0 / 3.0, m_fGone);
 		newTarget.y = linePoint(m_pos1.y, m_fPeriod / 3.0, m_pos2.y, m_fPeriod * 2.0 / 3.0, m_fGone);
 		SetTarget(newTarget);
 	}
 	else if (m_fGone < m_fPeriod) {
+		if (m_nSoldered != SOLDER_PNT) {
+			m_nSoldered = SOLDER_PNT;
+		}
 		POINT newTarget;
 		newTarget.x = linePoint(m_pos2.x, m_fPeriod * 2.0 / 3.0, m_pos0.x, m_fPeriod, m_fGone);
 		newTarget.y = linePoint(m_pos2.y, m_fPeriod * 2.0 / 3.0, m_pos0.y, m_fPeriod, m_fGone);
@@ -50,7 +62,7 @@ void Solder::Update(DWORD dt, Graphics* graphics, int w, int h) {
 	}
 	else {
 		m_fGone = 0;
-		m_nState = ST_SOLDER_stop;
+		m_nState = ST_SOLDER_finished;
 		SetTarget(m_pos0);
 	}
 
@@ -59,6 +71,10 @@ void Solder::Update(DWORD dt, Graphics* graphics, int w, int h) {
 
 int Solder::GetState() {
 	return m_nState;
+}
+
+void Solder::SetState(int state) {
+	m_nState = state;
 }
 
 void Solder::TestPaint(Graphics* graphics, int w, int h) {

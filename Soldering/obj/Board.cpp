@@ -62,8 +62,16 @@ void Board::GetSolderingPath(POINT& pos0, POINT& pos1, POINT& pos2) {
 	pos0.y = pos1.y + 60;
 }
 
+BOOL Board::SolderingFinished() {
+	return m_ActiveCircuit->GetSoldered() == SOLDER_PNT;
+}
+
 int Board::GetState() {
 	return m_nState;
+}
+
+void Board::SetState(int state) {
+	m_nState = state;
 }
 
 void Board::Update(DWORD dt, Graphics* graphics, int w, int h) {
@@ -73,8 +81,11 @@ void Board::Update(DWORD dt, Graphics* graphics, int w, int h) {
 	}
 	m_dAngle = m_dAngle + (PI / m_fPeriod * dt);
 	if (m_dAngle >= PI) {
-		m_dAngle = PI;
+		m_dAngle = 0;
 		m_nState = ST_BOARD_stop;
+
+		m_ActiveCircuit->SetSoldered(0);
+		m_PendingCircuit->SetSoldered(SOLDER_PNT);
 	}
 	m_ActiveCircuit->Rotate(m_position, -m_dAngle);
 	m_PendingCircuit->Rotate(m_position, -m_dAngle);
@@ -82,7 +93,17 @@ void Board::Update(DWORD dt, Graphics* graphics, int w, int h) {
 }
 
 void Board::RemoveCompleted() {
-	m_ActiveCircuit->SetVisible(FALSE);
+	m_PendingCircuit->SetVisible(FALSE);
+	m_PendingCircuit->SetItemVisible(FALSE);
+	m_PendingCircuit->SetSoldered(0);
+}
+
+void Board::CircuitAttach() {
+	m_PendingCircuit->SetVisible(TRUE);
+}
+
+void Board::CircuitItemAttach() {
+	m_PendingCircuit->SetItemVisible(TRUE);
 }
 
 void Board::SetSoldered(int n) {

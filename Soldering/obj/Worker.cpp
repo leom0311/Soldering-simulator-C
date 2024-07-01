@@ -3,13 +3,28 @@
 #include <math.h>
 
 Worker::Worker() {
+	m_nState = ST_WORKER_finished;
+	m_fPeriod = 3000.0;
 }
 
 Worker::Worker(POINT posHead, int headRadius) {
+	m_nState = ST_WORKER_finished;
+	m_fPeriod = 3000.0;
 	SetParameters(posHead, headRadius);
 }
 
 Worker::~Worker() {
+}
+
+int Worker::GetState() {
+	return m_nState;
+}
+
+void Worker::SetState(int state) {
+	m_nState = state;
+	if (m_nState == ST_WORKER_pending) {
+		m_fGone = 0;
+	}
 }
 
 void Worker::SetParameters(POINT posHead, int headRadius) {
@@ -46,7 +61,7 @@ void DrawRotatedEllipse(Graphics* graphics, SolidBrush& brush, RectF& rect, floa
 	graphics->FillPath(&brush, &path);
 }
 
-void Worker::TestPaint(Graphics *graphics, int w, int h) {
+void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 	SolidBrush brushBody(Color(255, 0x4f, 0x81, 0xbd));
 	graphics->FillEllipse(&brushBody, X(m_posBody.x, w) - m_nBodyWidth, Y(m_posBody.y, h) + m_nBodyHeight, m_nBodyWidth * 2, m_nBodyHeight * 2);
 
@@ -57,27 +72,44 @@ void Worker::TestPaint(Graphics *graphics, int w, int h) {
 
 
 	POINT org, middle, target;
-	m_leftArm.GetPositions(org, middle, target);
-	POINT newTarget;
-	newTarget.x = org.x + m_nHeadRadius * 2;
-	newTarget.y = org.y + m_nHeadRadius * 4.5;
-	m_leftArm.SetTarget(newTarget);
-	
-	m_leftArm.GetPositions(org, middle, target);
+	POINT orgLeftTarget;
+	POINT orgRightTarget;
 
+	m_leftArm.GetPositions(org, middle, target);
+	orgLeftTarget.x = org.x + m_nHeadRadius * 2;
+	orgLeftTarget.y = org.y + m_nHeadRadius * 4.5;
+
+	m_rightArm.GetPositions(org, middle, target);
+	orgRightTarget.x = org.x - m_nHeadRadius * 2;
+	orgRightTarget.y = org.y + m_nHeadRadius * 4.5;
+
+
+	if (m_nState > ST_WORKER_pending) {
+		m_fGone += dt;
+		if (m_fGone <= m_fPeriod / 3.0) {
+			SetState(ST_WORKER_removing);
+		}
+		else if (m_fGone <= m_fPeriod * 2.0 / 3.0) {
+			SetState(ST_WORKER_set_circuit);
+		}
+		else if (m_fGone < m_fPeriod) {
+			SetState(ST_WORKER_fill_circuit);
+		}
+		else {
+			SetState(ST_WORKER_finished);
+		}
+	}
+
+	m_leftArm.SetTarget(orgLeftTarget);
+	m_leftArm.GetPositions(org, middle, target);
 	RectF rect(X(org.x, w), Y(org.y, h), distance(middle, org), 32);
-
 	DrawRotatedEllipse(graphics, brushBody, rect, atan2(middle.y - org.y, middle.x - org.x));
 	RectF rect1(X(middle.x, w), Y(middle.y, h), distance(middle, target), 28);
 	DrawRotatedEllipse(graphics, brushBody, rect1, atan2(target.y - middle.y, target.x - middle.x));
 
 
+	m_rightArm.SetTarget(orgRightTarget);
 	m_rightArm.GetPositions(org, middle, target);
-	newTarget.x = org.x - m_nHeadRadius * 2;
-	newTarget.y = org.y + m_nHeadRadius * 4.5;
-	m_rightArm.SetTarget(newTarget);
-	m_rightArm.GetPositions(org, middle, target);
-
 	RectF rect2(X(org.x, w), Y(org.y, h), distance(middle, org), 32);
 	DrawRotatedEllipse(graphics, brushBody, rect2, atan2(middle.y - org.y, middle.x - org.x));
 	RectF rect3(X(middle.x, w), Y(middle.y, h), distance(middle, target), 28);
