@@ -5,6 +5,10 @@
 #define X(x, w) ((x) + (w) / 2)
 #define Y(y, h) (-(y) + (h) / 2)
 
+typedef struct POINT_D {
+	double x;
+	double y;
+} POINT_D;
 
 double distance(POINT p1, POINT p2);
 POINT calculateThirdPoint(POINT A, POINT B, double AB, double BC, double CA);

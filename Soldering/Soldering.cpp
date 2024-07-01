@@ -159,6 +159,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             pos.y = 0;
 
             Board board(pos, 130);
+            // board.SetAngle(-90 * 3.1415920654 / 180);
             board.TestPaint(hdc, rect.right - rect.left, rect.bottom - rect.top);
            
             EndPaint(hWnd, &ps);

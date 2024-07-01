@@ -11,12 +11,16 @@ private:
 
 	int m_nSoldered;
 	BOOL m_bVisible;
+
+	POINT m_rotOrigin;
+	double m_rotAngle;
 public:
 	Circuit();
 	Circuit(POINT pos, int width, int height);
 	~Circuit();
 
-	void GetSolderingPoint(int idx, POINT& lt, POINT& rb);
+	void Rotate(POINT pos, double angle);
+	void GetSolderingPoint(int idx, POINT& lt, POINT& lb, POINT& rt, POINT& rb);
 	void SetParameters(POINT pos, int width, int height);
 	void SetVisible(BOOL visible);
 	BOOL GetVisible();
