@@ -14,7 +14,6 @@ using namespace Gdiplus;
 #define TIMER_ID 1
 #define TARGET_FPS 48
 
-// Forward declarations of functions included in this code module:
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -25,12 +24,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // Initialize GDI+
     GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-    // Register the window class.
     const TCHAR CLASS_NAME[] = _T("Sample Window Class");
 
     WNDCLASSEX wcex = { };
@@ -53,7 +50,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         return 1;
     }
 
-    // Create the window.
     HWND hWnd = CreateWindow(
         CLASS_NAME,
         _T("Solder"),
@@ -72,14 +68,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         return 1;
     }
 
-    // Show the window.
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 
-    // Set up a timer to update the drawing at the specified FPS
     SetTimer(hWnd, TIMER_ID, 1000 / TARGET_FPS, nullptr);
 
-    // Main message loop:
     MSG msg;
     while (GetMessage(&msg, nullptr, 0, 0))
     {
@@ -87,10 +80,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         DispatchMessage(&msg);
     }
 
-    // Kill the timer
     KillTimer(hWnd, TIMER_ID);
 
-    // Shutdown GDI+
     GdiplusShutdown(gdiplusToken);
 
     return (int)msg.wParam;
