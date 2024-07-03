@@ -4,12 +4,14 @@
 
 Worker::Worker() {
 	m_nState = ST_WORKER_finished;
-	m_fPeriod = 1800.0;
+	m_fPeriod = 3600.0;
+	m_nAttachedItemNum = 0;
 }
 
 Worker::Worker(POINT posHead, int headRadius) {
 	m_nState = ST_WORKER_finished;
-	m_fPeriod = 3000.0;
+	m_fPeriod = 3600.0;
+	m_nAttachedItemNum = 0;
 	SetParameters(posHead, headRadius);
 }
 
@@ -61,6 +63,10 @@ void DrawRotatedEllipse(Graphics* graphics, SolidBrush& brush, RectF& rect, floa
 	graphics->FillPath(&brush, &path);
 }
 
+int Worker::GetAttachedItemNum() {
+	return m_nAttachedItemNum;
+}
+
 void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 	SolidBrush brushBody(Color(255, 0x4f, 0x81, 0xbd));
 	graphics->FillEllipse(&brushBody, X(m_posBody.x, w) - m_nBodyWidth, Y(m_posBody.y, h) + m_nBodyHeight, m_nBodyWidth * 2, m_nBodyHeight * 2);
@@ -92,40 +98,77 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 
 	if (m_nState > ST_WORKER_pending) {
 		m_fGone += dt;
-		if (m_fGone <= m_fPeriod / 3.0) {
+		if (m_fGone <= m_fPeriod / 6.0) {
 			SetState(ST_WORKER_removing);
-			if (m_fGone <= m_fPeriod / 6.0) {
-				rightTarget.x = linePoint(orgRightTarget.x, 0, orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 6.0, m_fGone);
-				rightTarget.y = linePoint(orgRightTarget.y, 0, orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 6.0, m_fGone);
+			if (m_fGone <= m_fPeriod / 12.0) {
+				rightTarget.x = linePoint(orgRightTarget.x, 0, orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 12.0, m_fGone);
+				rightTarget.y = linePoint(orgRightTarget.y, 0, orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 12.0, m_fGone);
 			}
 			else {
-				rightTarget.x = linePoint(orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 6.0, orgRightTarget.x, m_fPeriod / 3.0, m_fGone);
-				rightTarget.y = linePoint(orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 6.0, orgRightTarget.y, m_fPeriod / 3.0, m_fGone);
+				rightTarget.x = linePoint(orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 12.0, orgRightTarget.x, m_fPeriod / 6.0, m_fGone);
+				rightTarget.y = linePoint(orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 12.0, orgRightTarget.y, m_fPeriod / 6.0, m_fGone);
 			}
 		}
-		else if (m_fGone <= m_fPeriod * 2.0 / 3.0) {
-			if (m_fGone <= m_fPeriod * 3.0 / 6.0) {
-				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 1.0 / 3.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 6.0, m_fGone);
-				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 1.0 / 3.0, orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 6.0, m_fGone);
+		else if (m_fGone <= m_fPeriod * 2.0 / 6.0) {
+			if (m_fGone <= m_fPeriod * 3.0 / 12.0) {
+				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 1.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 12.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 1.0 / 6.0, orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 12.0, m_fGone);
 			}
 			else {
-				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 6.0, orgLeftTarget.x, m_fPeriod * 2.0 / 3.0, m_fGone);
-				leftTarget.y = linePoint(orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 6.0, orgLeftTarget.y, m_fPeriod * 2.0 / 3.0, m_fGone);
+				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 12.0, orgLeftTarget.x, m_fPeriod * 2.0 / 6.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 12.0, orgLeftTarget.y, m_fPeriod * 2.0 / 6.0, m_fGone);
+			}
+		}
+		else if (m_fGone <= m_fPeriod * 3.0 / 6.0) {
+			m_nAttachedItemNum = 0;
+			if (GetState() != ST_WORKER_set_circuit) {
+				SetState(ST_WORKER_set_circuit);
+			}
+			if (m_fGone <= m_fPeriod * 5.0 / 12.0) {
+				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 2.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 5.0 / 12.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 2.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 5.0 / 12.0, m_fGone);
+			}
+			else {
+				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 5.0 / 12.0, orgLeftTarget.x, m_fPeriod * 3.0 / 6.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 5.0 / 12.0, orgLeftTarget.y, m_fPeriod * 3.0 / 6.0, m_fGone);
+			}
+		}
+		else if (m_fGone <= m_fPeriod * 4.0 / 6.0) {
+			m_nAttachedItemNum = 1;
+			if (m_fGone <= m_fPeriod * 7.0 / 12.0) {
+				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 3.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 7.0 / 12.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 3.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 7.0 / 12.0, m_fGone);
+			}
+			else {
+				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 7.0 / 12.0, orgLeftTarget.x, m_fPeriod * 4.0 / 6.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 7.0 / 12.0, orgLeftTarget.y, m_fPeriod * 4.0 / 6.0, m_fGone);
+			}
+		}
+		else if (m_fGone <= m_fPeriod * 5.0 / 6.0) {
+			m_nAttachedItemNum = 2;
+			if (m_fGone <= m_fPeriod * 9.0 / 12.0) {
+				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 4.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 9.0 / 12.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 4.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 9.0 / 12.0, m_fGone);
+			}
+			else {
+				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 9.0 / 12.0, orgLeftTarget.x, m_fPeriod * 5.0 / 6.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 9.0 / 12.0, orgLeftTarget.y, m_fPeriod * 5.0 / 6.0, m_fGone);
 			}
 		}
 		else if (m_fGone < m_fPeriod) {
-			if (m_fGone <= m_fPeriod * 5.0 / 6.0) {
-				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 2.0 / 3.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 5.0 / 6.0, m_fGone);
-				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 2.0 / 3.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 5.0 / 6.0, m_fGone);
+			m_nAttachedItemNum = 3;
+			if (m_fGone <= m_fPeriod * 11.0 / 12.0) {
+				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 5.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 11.0 / 12.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 5.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 11.0 / 12.0, m_fGone);
 			}
 			else {
-				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 5.0 / 6.0, orgLeftTarget.x, m_fPeriod * 3.0 / 3.0, m_fGone);
-				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 5.0 / 6.0, orgLeftTarget.y, m_fPeriod * 3.0 / 3.0, m_fGone);
+				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 11.0 / 12.0, orgLeftTarget.x, m_fPeriod * 6.0 / 6.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 11.0 / 12.0, orgLeftTarget.y, m_fPeriod * 6.0 / 6.0, m_fGone);
 			}
-			SetState(ST_WORKER_set_circuit);
 			m_fFinishPending = 0.0;
 		}
 		else {
+			m_nAttachedItemNum = 4;
 			SetState(ST_WORKER_fill_circuit);
 			m_fFinishPending += dt;
 			if (m_fFinishPending >= 500) {

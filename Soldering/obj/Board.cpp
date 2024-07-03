@@ -110,6 +110,10 @@ void Board::SetSoldered(int n) {
 	m_ActiveCircuit->SetSoldered(n);
 }
 
+void Board::SetAttachedItemNum(int n) {
+	m_PendingCircuit->SetItemNum(n);
+}
+
 void Board::TestPaint(Graphics* graphics, int w, int h) {
 	SolidBrush brush(Color(255, 0xee, 0xec, 0xe1));
 	Pen pen1(Color(255, 0, 0, 0), 1);

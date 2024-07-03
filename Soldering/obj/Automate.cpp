@@ -81,9 +81,11 @@ void Automate::Update(DWORD dt, Graphics* graphics, int w, int h) {
             }
             else if (m_Worker.GetState() == ST_WORKER_set_circuit) {
                 m_Board.CircuitAttach();
+                m_Board.SetAttachedItemNum(m_Worker.GetAttachedItemNum());
             }
             else if (m_Worker.GetState() == ST_WORKER_fill_circuit) {
                 m_Board.CircuitItemAttach();
+                m_Board.SetAttachedItemNum(m_Worker.GetAttachedItemNum());
             }
         }
     }

@@ -32,11 +32,14 @@ private:
 	float m_fPeriod;
 
 	float m_fFinishPending;
+
+	int m_nAttachedItemNum;
 public:
 	Worker();
 	Worker(POINT posHead, int headRadius);
 	~Worker();
 
+	int GetAttachedItemNum();
 	int GetState();
 	void SetState(int state);
 	void SetParameters(POINT posHead, int headRadius);

@@ -37,6 +37,7 @@ public:
 
 	void CircuitAttach();
 	void CircuitItemAttach();
+	void SetAttachedItemNum(int n);
 
 	void TestPaint(Graphics* graphics, int w, int h);
 };

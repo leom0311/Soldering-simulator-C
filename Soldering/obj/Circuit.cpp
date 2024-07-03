@@ -4,6 +4,7 @@ Circuit::Circuit() {
 	m_nSoldered = 0;
 	m_bVisible = TRUE;
 	m_bItemVisible = TRUE;
+	m_nItemNum = SOLDER_PNT;
 }
 
 Circuit::Circuit(POINT pos, int width, int height) {
@@ -14,6 +15,7 @@ Circuit::Circuit(POINT pos, int width, int height) {
 	m_nSoldered = 0;
 	m_bVisible = TRUE;
 	m_bItemVisible = TRUE;
+	m_nItemNum = SOLDER_PNT;
 }
 
 Circuit::~Circuit() {
@@ -91,6 +93,21 @@ void DrawRotatedRectangle(Graphics* graphics, Pen& pen, SolidBrush& brush, RectF
 
 void Circuit::SetItemVisible(BOOL visible) {
 	m_bItemVisible = visible;
+	if (visible == FALSE) {
+		SetItemNum(0);
+	}
+}
+
+int Circuit::GetItemNum() {
+	return m_nItemNum;
+}
+void Circuit::SetItemNum(int num) {
+	m_nItemNum = num;
+}
+
+void Circuit::IncItemNum() {
+	m_nItemNum++;
+	m_nItemNum %= (SOLDER_PNT + 1);
 }
 
 BOOL Circuit::GetItemVisible() {
@@ -115,8 +132,8 @@ void Circuit::TestPaint(Graphics * graphics, int w, int h) {
 
 	DrawRotatedRectangle(graphics, blackPen, brush, RectF(X(leftTop.x, w), Y(leftTop.y, h), m_nWidth, m_nHeight), PointF(X(x, w), Y(y, h)), m_rotAngle * 180 / PI);
 
-	if (m_bItemVisible) {
-		for (int i = 0; i < SOLDER_PNT; i++) {
+	if (m_bItemVisible || 1) {
+		for (int i = (SOLDER_PNT - m_nItemNum); i < SOLDER_PNT; i++) {
 			POINT lt, lb, rt, rb;
 			GetSolderingPoint(i, lt, lb, rt, rb);
 			int width = rt.x - lt.x;

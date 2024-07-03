@@ -13,6 +13,8 @@ private:
 
 	POINT m_rotOrigin;
 	double m_rotAngle;
+
+	int m_nItemNum;
 public:
 	Circuit();
 	Circuit(POINT pos, int width, int height);
@@ -26,6 +28,10 @@ public:
 
 	void SetItemVisible(BOOL visible);
 	BOOL GetItemVisible();
+
+	int GetItemNum();
+	void SetItemNum(int num);
+	void IncItemNum();
 
 	void SetSoldered(int soldered);
 	int GetSoldered();
