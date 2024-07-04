@@ -10,8 +10,10 @@ enum {
 class Board {
 private:
 	BOOL m_nState;
-
+	// currnet active item to solder
 	Circuit *m_ActiveCircuit;
+
+	// pending item to solder(under person hands)
 	Circuit* m_PendingCircuit;
 
 	POINT m_position;

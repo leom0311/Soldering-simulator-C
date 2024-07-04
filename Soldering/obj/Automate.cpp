@@ -33,44 +33,54 @@ Automate::~Automate() {
 DWORD g_fSolderingFinishPending = 0;
 DWORD g_fBoardRotatePending = 0;
 
+
+// This is state machine
 void Automate::Update(DWORD dt, Graphics* graphics, int w, int h) {
     m_Board.Update(dt, graphics, w, h);
     m_Worker.Update(dt, graphics, w, h);
     m_Solder.Update(dt, graphics, w, h);
 
     if (m_Board.GetState() == ST_BOARD_stop) {
+        // wait 500ms after round board
         if (g_fBoardRotatePending <= 500) {
             g_fBoardRotatePending += dt;
             return;
         }
         if (m_Worker.GetState() == ST_WORKER_finished) {
             if (m_Solder.GetState() == ST_SOLDER_finished) {
+                // wait 500ms before round after soldering
                 if (g_fSolderingFinishPending <= 500) {
                     g_fSolderingFinishPending += dt;
                     return;
                 }
                 g_fSolderingFinishPending = 0;
                 g_fBoardRotatePending = 0;
-
+                // round board
                 m_Board.SetState(ST_BOARD_rotating);
+                // stop soldering bot
                 m_Solder.SetState(ST_SOLDER_stop);
+                // prepare person for remove completed item and inesrt new set
                 m_Worker.SetState(ST_WORKER_pending);
             }
             else {
+                // outlined soldered item
                 if (m_Solder.GetState() == ST_SOLDER_moving) {
                     m_Board.SetSoldered(m_Solder.GetSoldered());
                 }
                 else {
+                    // start soldering bot
                     m_Solder.SetState(ST_SOLDER_moving);
                 }
             }
         }
         else {
             if (m_Solder.GetState() != ST_SOLDER_finished) {
+                // outlined soldered item
                 if (m_Solder.GetState() == ST_SOLDER_moving) {
                     m_Board.SetSoldered(m_Solder.GetSoldered());
                 }
                 else {
+                    // start soldering bot
                     m_Solder.SetState(ST_SOLDER_moving);
                 }
             }
