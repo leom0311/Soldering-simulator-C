@@ -1,6 +1,8 @@
 #include "Solder.h"
 #include <math.h>
 
+
+// it is same as Joint but paint
 Solder::Solder() {
 	m_nState = ST_SOLDER_stop;
 	m_fGone = 0.0;
@@ -35,6 +37,11 @@ void Solder::Update(DWORD dt, Graphics* graphics, int w, int h) {
 
 	m_fGone += dt;
 	if (m_fGone <= m_fPeriod / 3.0) {
+		// moving to start point of soldering according below path
+		//			\
+		//           \
+		//            \
+		//
 		POINT newTarget;
 		newTarget.x = linePoint(m_pos0.x, 0, m_pos1.x, m_fPeriod / 3.0, m_fGone);
 		newTarget.y = linePoint(m_pos0.y, 0, m_pos1.y, m_fPeriod / 3.0, m_fGone);
@@ -46,6 +53,8 @@ void Solder::Update(DWORD dt, Graphics* graphics, int w, int h) {
 		if (m_nSoldered == 0) {
 			m_nSoldered = 1;
 		}
+		// soldering
+		// ----------------
 		POINT newTarget;
 		newTarget.x = linePoint(m_pos1.x, m_fPeriod / 3.0, m_pos2.x, m_fPeriod * 2.0 / 3.0, m_fGone);
 		newTarget.y = linePoint(m_pos1.y, m_fPeriod / 3.0, m_pos2.y, m_fPeriod * 2.0 / 3.0, m_fGone);
@@ -55,6 +64,10 @@ void Solder::Update(DWORD dt, Graphics* graphics, int w, int h) {
 		if (m_nSoldered != SOLDER_PNT) {
 			m_nSoldered = SOLDER_PNT;
 		}
+		// return org pos accroding below path
+		//          /
+		//         /
+		//        /
 		POINT newTarget;
 		newTarget.x = linePoint(m_pos2.x, m_fPeriod * 2.0 / 3.0, m_pos0.x, m_fPeriod, m_fGone);
 		newTarget.y = linePoint(m_pos2.y, m_fPeriod * 2.0 / 3.0, m_pos0.y, m_fPeriod, m_fGone);
@@ -78,6 +91,8 @@ void Solder::SetState(int state) {
 }
 
 void Solder::TestPaint(Graphics* graphics, int w, int h) {
+	// draw solder
+	//    just draw rectangle around arm of solder
 	SolidBrush brush(Color(255, 0xff, 0xcc, 0x99));
 	Pen blackPen(Color(255, 0, 0, 0), 1);
 
@@ -89,6 +104,7 @@ void Solder::TestPaint(Graphics* graphics, int w, int h) {
 	DrawRotatedRectangle(graphics, blackPen, brush, RectF(X(middle.x - 6, w), Y(middle.y + 10, h), 12, m_nLength1 + 10), PointF(X(middle.x, w), Y(middle.y, h)), (90 + atan2(target.y - middle.y, target.x - middle.x) * 180 / PI));
 	DrawRotatedRectangle(graphics, blackPen, brush, RectF(X(org.x - 9, w), Y(org.y + 8, h), 18, m_nLength0 + 16), PointF(X(org.x, w), Y(org.y, h)), (90 + atan2(middle.y - org.y, middle.x - org.x) * 180 / PI));
 
+	// draw circle in joint point
 	graphics->DrawEllipse(&blackPen, X(org.x - 2, w), Y(org.y + 2, h), 4, 4);
 	graphics->DrawEllipse(&blackPen, X(middle.x - 2, w), Y(middle.y + 2, h), 4, 4);
 }

@@ -1,7 +1,6 @@
 #include "Joint.h"
 #include <math.h>
 
-
 double distance(POINT p1, POINT p2) {
     return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2));
 }
@@ -68,6 +67,8 @@ void Joint::GetPositions(POINT& org, POINT& middle, POINT& target) {
 	target = m_posTarget;
 }
 
+// ref to 03.jpg & 04.png
+// calculate middle path according to target point
 void Joint::SetTarget(POINT target) {
 	int d = distance(m_posOrg, target);
 	double theta;
@@ -75,7 +76,7 @@ void Joint::SetTarget(POINT target) {
 	double dx = target.x - m_posOrg.x;
 	double dy = target.y - m_posOrg.y;
 	if (dx == 0) {
-		theta = 3.141592 / 2;
+		theta = PI / 2;
 	}
 	else {
 		theta = atan2(dy, dx);
