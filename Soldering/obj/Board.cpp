@@ -31,16 +31,19 @@ Board::Board(POINT pos, int radius, float period) {
 Board::~Board() {
 }
 
+// for moving completed circuit while right arm moves from board to lack
 void Board::SetMovingCompleted(BOOL visible, POINT pos) {
 	m_posMovingCompleted = pos;
 	m_bMovingCompleted = visible;
 }
 
+// for moving empty circuit while left arm moves
 void Board::SetMovingEmpty(BOOL visible, POINT pos) {
 	m_posMovingEmpty = pos;
 	m_bMovingEmpty = visible;
 }
 
+// for moving small item while left arm moves
 void Board::SetMovingItem(BOOL visible, POINT pos) {
 	m_posMovingItem = pos;
 	m_bMovingItem = visible;
@@ -56,12 +59,14 @@ void Board::SetParameters(POINT pos, int radius, float period) {
 	InitCircuits();
 }
 
+// board rounds according to m_dAngle (0~180)
 void Board::SetAngle(double angle) {
 	m_dAngle = angle;
 
 	m_ActiveCircuit->Rotate(m_position, m_dAngle);
 	m_PendingCircuit->Rotate(m_position, m_dAngle);
 }
+
 #define CIRCUIT_W(w) ((w) * 3 / 5)
 #define CIRCUIT_H(h) ((h) / 8)
 
@@ -76,6 +81,11 @@ void Board::InitCircuits() {
 	m_PendingCircuit->Rotate(m_position, 0);
 }
 
+// set path for moving solder
+//                        /\
+//                       /  \
+//                      /    \
+//                      ------
 void Board::GetSolderingPath(POINT& pos0, POINT& pos1, POINT& pos2) {
 	POINT lt, lb, rt, rb;
 	m_ActiveCircuit->GetSolderingPoint(SOLDER_PNT - 1, lt, lb, rt, rb);
@@ -105,23 +115,29 @@ void Board::SetState(int state) {
 }
 
 void Board::Update(DWORD dt, Graphics* graphics, int w, int h) {
+	// wait until solder finishes
 	if (m_nState != ST_BOARD_rotating) {
 		TestPaint(graphics, w, h);
 		return;
 	}
+
+	// round boards
 	m_dAngle = m_dAngle + (PI / m_fPeriod * dt);
 	if (m_dAngle >= PI) {
+		// if round 180, stop board
 		m_dAngle = 0;
 		m_nState = ST_BOARD_stop;
 
 		m_ActiveCircuit->SetSoldered(0);
 		m_PendingCircuit->SetSoldered(SOLDER_PNT);
 	}
+	// draw rotated circuits
 	m_ActiveCircuit->Rotate(m_position, -m_dAngle);
 	m_PendingCircuit->Rotate(m_position, -m_dAngle);
 	TestPaint(graphics, w, h);
 }
 
+// hide completed circuit when right arm starts to move
 void Board::RemoveCompleted() {
 	m_PendingCircuit->SetVisible(FALSE);
 	m_PendingCircuit->SetItemVisible(FALSE);
@@ -173,16 +189,21 @@ void Board::TestPaint(Graphics* graphics, int w, int h) {
 	Pen pen1(Color(255, 0, 0, 0), 1);
 	Pen pen2(Color(255, 0, 0, 0), 2);
 	Pen redPen(Color(255, 255, 0, 0), 2);
+
+	// draw main board circle
 	graphics->FillEllipse(&brush, X(m_position.x, w) - m_nRadius, Y(m_position.y, h) - m_nRadius, m_nRadius * 2, m_nRadius * 2);
 	graphics->DrawEllipse(&pen2, X(m_position.x, w) - m_nRadius, Y(m_position.y, h) - m_nRadius, m_nRadius * 2, m_nRadius * 2);
 
+	// draw circuits
 	m_ActiveCircuit->TestPaint(graphics, w, h);
 	m_PendingCircuit->TestPaint(graphics, w, h);
 
+	// draw lack for empty circuits (left top)
 	SolidBrush lackBrush(Color(255, 0x8e, 0xb4, 0xe3));
 	graphics->FillRectangle(&lackBrush, X(m_position.x, w) - m_nRadius * 2, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
 	graphics->DrawRectangle(&pen1, X(m_position.x, w) - m_nRadius * 2, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
 
+	// draw empty circuits inner upper lack
 	SolidBrush whiteBrush(Color(255, 255, 255, 255));
 	for (int i = 0; i < m_nEmptySlot; i++) {
 		int j = SLOT_NUM - i - 1;
@@ -194,9 +215,11 @@ void Board::TestPaint(Graphics* graphics, int w, int h) {
 	int width = (CIRCUIT_W(m_nRadius) - 5 * offset) / 4;
 	int height = CIRCUIT_H(m_nRadius) * 3 / 6;
 
+	// draw item lack
 	graphics->FillRectangle(&lackBrush, X(m_position.x, w) - m_nRadius * 2, Y(m_position.y - m_nRadius * 0.5, h) + CIRCUIT_W(m_nRadius) + 2 * 10 + 10, CIRCUIT_H(m_nRadius) * 5 + 10 * 6, 8 * height + 9 * 5);
 	graphics->DrawRectangle(&pen1, X(m_position.x, w) - m_nRadius * 2, Y(m_position.y - m_nRadius * 0.5, h) + CIRCUIT_W(m_nRadius) + 2 * 10 + 10, CIRCUIT_H(m_nRadius) * 5 + 10 * 6, 8 * height + 9 * 5);
 
+	// draw item inner lack
 	int nn = 0;
 	for (int ii = 0; ii < 5; ii++) {
 		int i = 5 - ii - 1;
@@ -212,6 +235,7 @@ void Board::TestPaint(Graphics* graphics, int w, int h) {
 
 	CONT_:
 	
+	// draw completed lack
 	graphics->FillRectangle(&lackBrush, X(m_position.x, w) + m_nRadius, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
 	graphics->DrawRectangle(&pen1, X(m_position.x, w) + m_nRadius, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
 
