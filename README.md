@@ -3,4 +3,5 @@ Visual Studio 2022 is used for this project.
 - Open Soldering.sln and build.
   
 skypeid: live:.cid.b185de096f5a61df
+
 discord: leom0311
