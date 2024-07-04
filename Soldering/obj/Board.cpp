@@ -4,12 +4,19 @@
 Board::Board() {
 	m_ActiveCircuit = new Circuit();
 	m_PendingCircuit = new Circuit();
+
+	m_nCompleted = 0;
+	m_nEmptySlot = SLOT_NUM;
+	m_nEmptyItem = 40;
 }
 
 Board::Board(POINT pos, int radius, float period) {
 	m_ActiveCircuit = new Circuit();
 	m_PendingCircuit = new Circuit();
 
+	m_nCompleted = 0;
+	m_nEmptySlot = SLOT_NUM;
+	m_nEmptyItem = 40;
 	SetParameters(pos, radius, period);
 }
 
@@ -110,6 +117,30 @@ void Board::SetSoldered(int n) {
 	m_ActiveCircuit->SetSoldered(n);
 }
 
+int Board::GetCompletedSlot() {
+	return m_nCompleted;
+}
+
+void Board::SetCompletedSlot(int n) {
+	m_nCompleted = n;
+}
+
+int Board::GetEmptySlot() {
+	return m_nEmptySlot;
+}
+
+void Board::SetEmptySlot(int n) {
+	m_nEmptySlot = n;
+}
+
+int Board::GetEmptyItem() {
+	return m_nEmptyItem;
+}
+
+void Board::SetEmptyItem(int n) {
+	m_nEmptyItem = n;
+}
+
 void Board::SetAttachedItemNum(int n) {
 	m_PendingCircuit->SetItemNum(n);
 }
@@ -131,9 +162,10 @@ void Board::TestPaint(Graphics* graphics, int w, int h) {
 	graphics->DrawRectangle(&pen1, X(m_position.x, w) - m_nRadius * 2, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
 
 	SolidBrush whiteBrush(Color(255, 255, 255, 255));
-	for (int i = 0; i < 5; i++) {
-		graphics->FillRectangle(&whiteBrush, X(m_position.x - m_nRadius * 2 + 10 * (i + 1) + i * CIRCUIT_H(m_nRadius), w), Y(m_position.y - m_nRadius * 0.5 - 10, h), CIRCUIT_H(m_nRadius), CIRCUIT_W(m_nRadius));
-		graphics->DrawRectangle(&pen2, X(m_position.x - m_nRadius * 2 + 10 * (i + 1) + i * CIRCUIT_H(m_nRadius), w), Y(m_position.y - m_nRadius * 0.5 - 10, h), CIRCUIT_H(m_nRadius), CIRCUIT_W(m_nRadius));
+	for (int i = 0; i < m_nEmptySlot; i++) {
+		int j = SLOT_NUM - i - 1;
+		graphics->FillRectangle(&whiteBrush, X(m_position.x - m_nRadius * 2 + 10 * (j + 1) + j * CIRCUIT_H(m_nRadius), w), Y(m_position.y - m_nRadius * 0.5 - 10, h), CIRCUIT_H(m_nRadius), CIRCUIT_W(m_nRadius));
+		graphics->DrawRectangle(&pen2, X(m_position.x - m_nRadius * 2 + 10 * (j + 1) + j * CIRCUIT_H(m_nRadius), w), Y(m_position.y - m_nRadius * 0.5 - 10, h), CIRCUIT_H(m_nRadius), CIRCUIT_W(m_nRadius));
 	}
 
 	int offset = CIRCUIT_W(m_nRadius) / 8;
@@ -143,18 +175,25 @@ void Board::TestPaint(Graphics* graphics, int w, int h) {
 	graphics->FillRectangle(&lackBrush, X(m_position.x, w) - m_nRadius * 2, Y(m_position.y - m_nRadius * 0.5, h) + CIRCUIT_W(m_nRadius) + 2 * 10 + 10, CIRCUIT_H(m_nRadius) * 5 + 10 * 6, 8 * height + 9 * 5);
 	graphics->DrawRectangle(&pen1, X(m_position.x, w) - m_nRadius * 2, Y(m_position.y - m_nRadius * 0.5, h) + CIRCUIT_W(m_nRadius) + 2 * 10 + 10, CIRCUIT_H(m_nRadius) * 5 + 10 * 6, 8 * height + 9 * 5);
 
-	for (int i = 0; i < 5; i++) {
+	int nn = 0;
+	for (int ii = 0; ii < 5; ii++) {
+		int i = 5 - ii - 1;
 		for (int j = 0; j < 8; j++) {
 			graphics->FillRectangle(&whiteBrush, X(m_position.x - m_nRadius * 2 + 10 * (i + 1) + i * CIRCUIT_H(m_nRadius) + (CIRCUIT_H(m_nRadius) - width) / 2, w), Y(m_position.y - m_nRadius * 0.5, h) + CIRCUIT_W(m_nRadius) + 2 * 10 + 10 + (j + 1) * 5 + j * height, width, height);
 			graphics->DrawRectangle(&pen2, X(m_position.x - m_nRadius * 2 + 10 * (i + 1) + i * CIRCUIT_H(m_nRadius) + (CIRCUIT_H(m_nRadius) - width) / 2, w), Y(m_position.y - m_nRadius * 0.5, h) + CIRCUIT_W(m_nRadius) + 2 * 10 + 10 + (j + 1) * 5 + j * height, width, height);
+			nn++;
+			if (m_nEmptyItem == nn) {
+				goto CONT_;
+			}
 		}
 	}
 
+	CONT_:
 	// complete
 	graphics->FillRectangle(&lackBrush, X(m_position.x, w) + m_nRadius, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
 	graphics->DrawRectangle(&pen1, X(m_position.x, w) + m_nRadius, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
 
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < m_nCompleted; i++) {
 		int x = m_position.x + m_nRadius + 10 * (i + 1) + i * CIRCUIT_H(m_nRadius);
 		int y = m_position.y - m_nRadius * 0.5 - 10;
 		graphics->FillRectangle(&whiteBrush, X(x, w), Y(y, h), CIRCUIT_H(m_nRadius), CIRCUIT_W(m_nRadius));

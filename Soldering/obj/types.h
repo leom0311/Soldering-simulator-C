@@ -12,6 +12,8 @@ using namespace Gdiplus;
 #define PI (3.141592654)
 #define SOLDER_PNT (4)
 
+#define SLOT_NUM (5)
+
 typedef struct POINT_D {
 	double x;
 	double y;

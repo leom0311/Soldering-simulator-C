@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "Joint.h"
+#include "Board.h"
 
 enum {
 	ST_WORKER_finished = 0,
@@ -34,11 +35,14 @@ private:
 	float m_fFinishPending;
 
 	int m_nAttachedItemNum;
+
+	Board* m_pBoard;
 public:
 	Worker();
 	Worker(POINT posHead, int headRadius);
 	~Worker();
 
+	void SetBoard(Board* p);
 	int GetAttachedItemNum();
 	int GetState();
 	void SetState(int state);

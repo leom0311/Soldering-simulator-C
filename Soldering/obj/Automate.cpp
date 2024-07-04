@@ -14,6 +14,7 @@ Automate::Automate() {
     pos.y = -100;
     Worker worker(pos, 40);
     m_Worker.SetParameters(pos, 40);
+    m_Worker.SetBoard(&m_Board);
 
     pos.x = -200;
     pos.y = 150;

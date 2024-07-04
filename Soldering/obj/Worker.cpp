@@ -18,6 +18,10 @@ Worker::Worker(POINT posHead, int headRadius) {
 Worker::~Worker() {
 }
 
+void Worker::SetBoard(Board* p) {
+	m_pBoard = p;
+}
+
 int Worker::GetState() {
 	return m_nState;
 }
@@ -67,6 +71,15 @@ int Worker::GetAttachedItemNum() {
 	return m_nAttachedItemNum;
 }
 
+
+BOOL movedCompleted = FALSE;
+BOOL movedEmptySlot = FALSE;
+
+BOOL movedEmptyItem_0 = FALSE;
+BOOL movedEmptyItem_1 = FALSE;
+BOOL movedEmptyItem_2 = FALSE;
+BOOL movedEmptyItem_3 = FALSE;
+
 void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 	SolidBrush brushBody(Color(255, 0x4f, 0x81, 0xbd));
 	graphics->FillEllipse(&brushBody, X(m_posBody.x, w) - m_nBodyWidth, Y(m_posBody.y, h) + m_nBodyHeight, m_nBodyWidth * 2, m_nBodyHeight * 2);
@@ -75,7 +88,6 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 	graphics->FillEllipse(&brush, X(m_posHead.x, w) - m_nHeadRadius * 0.9, Y(m_posHead.y, h) + m_nHeadRadius, m_nHeadRadius * 0.9 * 2, m_nHeadRadius * 2);
 	Pen pen(Color(255, 0x38, 0x5d, 0x8a), 3);
 	graphics->DrawEllipse(&pen, X(m_posHead.x, w) - m_nHeadRadius * 0.9, Y(m_posHead.y, h) + m_nHeadRadius, m_nHeadRadius * 0.9 * 2, m_nHeadRadius * 2);
-
 
 	POINT org, middle, target;
 	POINT orgLeftTarget;
@@ -103,8 +115,13 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			if (m_fGone <= m_fPeriod / 12.0) {
 				rightTarget.x = linePoint(orgRightTarget.x, 0, orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 12.0, m_fGone);
 				rightTarget.y = linePoint(orgRightTarget.y, 0, orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 12.0, m_fGone);
+				
 			}
 			else {
+				if (movedCompleted == FALSE) {
+					m_pBoard->SetCompletedSlot(m_pBoard->GetCompletedSlot() + 1);
+					movedCompleted = TRUE;
+				}
 				rightTarget.x = linePoint(orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 12.0, orgRightTarget.x, m_fPeriod / 6.0, m_fGone);
 				rightTarget.y = linePoint(orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 12.0, orgRightTarget.y, m_fPeriod / 6.0, m_fGone);
 			}
@@ -115,6 +132,10 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 1.0 / 6.0, orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 12.0, m_fGone);
 			}
 			else {
+				if (movedEmptySlot == FALSE) {
+					m_pBoard->SetEmptySlot(m_pBoard->GetEmptySlot() - 1);
+					movedEmptySlot = TRUE;
+				}
 				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 12.0, orgLeftTarget.x, m_fPeriod * 2.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 12.0, orgLeftTarget.y, m_fPeriod * 2.0 / 6.0, m_fGone);
 			}
@@ -129,6 +150,10 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 2.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 5.0 / 12.0, m_fGone);
 			}
 			else {
+				if (movedEmptyItem_0 == FALSE) {
+					m_pBoard->SetEmptyItem(m_pBoard->GetEmptyItem() - 1);
+					movedEmptyItem_0 = TRUE;
+				}
 				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 5.0 / 12.0, orgLeftTarget.x, m_fPeriod * 3.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 5.0 / 12.0, orgLeftTarget.y, m_fPeriod * 3.0 / 6.0, m_fGone);
 			}
@@ -140,6 +165,10 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 3.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 7.0 / 12.0, m_fGone);
 			}
 			else {
+				if (movedEmptyItem_1 == FALSE) {
+					m_pBoard->SetEmptyItem(m_pBoard->GetEmptyItem() - 1);
+					movedEmptyItem_1 = TRUE;
+				}
 				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 7.0 / 12.0, orgLeftTarget.x, m_fPeriod * 4.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 7.0 / 12.0, orgLeftTarget.y, m_fPeriod * 4.0 / 6.0, m_fGone);
 			}
@@ -151,6 +180,10 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 4.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 9.0 / 12.0, m_fGone);
 			}
 			else {
+				if (movedEmptyItem_2 == FALSE) {
+					m_pBoard->SetEmptyItem(m_pBoard->GetEmptyItem() - 1);
+					movedEmptyItem_2 = TRUE;
+				}
 				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 9.0 / 12.0, orgLeftTarget.x, m_fPeriod * 5.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 9.0 / 12.0, orgLeftTarget.y, m_fPeriod * 5.0 / 6.0, m_fGone);
 			}
@@ -162,16 +195,36 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 5.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 11.0 / 12.0, m_fGone);
 			}
 			else {
+				if (movedEmptyItem_3 == FALSE) {
+					m_pBoard->SetEmptyItem(m_pBoard->GetEmptyItem() - 1);
+					movedEmptyItem_3 = TRUE;
+				}
 				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 11.0 / 12.0, orgLeftTarget.x, m_fPeriod * 6.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 11.0 / 12.0, orgLeftTarget.y, m_fPeriod * 6.0 / 6.0, m_fGone);
 			}
 			m_fFinishPending = 0.0;
 		}
 		else {
+			movedEmptySlot = FALSE;
+			movedCompleted = FALSE;
+			movedEmptyItem_0 = FALSE;
+			movedEmptyItem_1 = FALSE;
+			movedEmptyItem_2 = FALSE;
+			movedEmptyItem_3 = FALSE;
+
 			m_nAttachedItemNum = 4;
 			SetState(ST_WORKER_fill_circuit);
 			m_fFinishPending += dt;
 			if (m_fFinishPending >= 500) {
+				if (m_pBoard->GetCompletedSlot() >= SLOT_NUM) {
+					m_pBoard->SetCompletedSlot(0);
+				}
+				if (m_pBoard->GetEmptySlot() <= 0) {
+					m_pBoard->SetEmptySlot(SLOT_NUM);
+				}
+				if (m_pBoard->GetEmptyItem() <= 0) {
+					m_pBoard->SetEmptyItem(40);
+				}
 				SetState(ST_WORKER_finished);
 			}
 		}

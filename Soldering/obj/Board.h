@@ -19,6 +19,11 @@ private:
 	double m_dAngle;
 
 	float m_fPeriod;
+
+	int m_nCompleted;
+	int m_nEmptySlot;
+
+	int m_nEmptyItem;
 public:
 	Board();
 	Board(POINT pos, int radius, float period);
@@ -38,6 +43,13 @@ public:
 	void CircuitAttach();
 	void CircuitItemAttach();
 	void SetAttachedItemNum(int n);
+
+	int GetCompletedSlot();
+	void SetCompletedSlot(int n);
+	int GetEmptySlot();
+	void SetEmptySlot(int n);
+	int GetEmptyItem();
+	void SetEmptyItem(int n);
 
 	void TestPaint(Graphics* graphics, int w, int h);
 };
