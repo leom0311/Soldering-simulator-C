@@ -24,6 +24,16 @@ private:
 	int m_nEmptySlot;
 
 	int m_nEmptyItem;
+
+	BOOL m_bMovingCompleted;
+	POINT m_posMovingCompleted;
+
+	BOOL m_bMovingEmpty;
+	POINT m_posMovingEmpty;
+
+	BOOL m_bMovingItem;
+	POINT m_posMovingItem;
+
 public:
 	Board();
 	Board(POINT pos, int radius, float period);
@@ -50,6 +60,10 @@ public:
 	void SetEmptySlot(int n);
 	int GetEmptyItem();
 	void SetEmptyItem(int n);
+
+	void SetMovingCompleted(BOOL visible, POINT pos);
+	void SetMovingEmpty(BOOL visible, POINT pos);
+	void SetMovingItem(BOOL visible, POINT pos);
 
 	void TestPaint(Graphics* graphics, int w, int h);
 };

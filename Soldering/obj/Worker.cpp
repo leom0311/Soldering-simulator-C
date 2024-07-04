@@ -108,6 +108,9 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 	leftTarget.x = orgLeftTarget.x;
 	leftTarget.y = orgLeftTarget.y;
 
+	POINT socketPos;
+	socketPos.x = 0;
+	socketPos.y = 0;
 	if (m_nState > ST_WORKER_pending) {
 		m_fGone += dt;
 		if (m_fGone <= m_fPeriod / 6.0) {
@@ -115,9 +118,13 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			if (m_fGone <= m_fPeriod / 12.0) {
 				rightTarget.x = linePoint(orgRightTarget.x, 0, orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 12.0, m_fGone);
 				rightTarget.y = linePoint(orgRightTarget.y, 0, orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 12.0, m_fGone);
-				
+
+				socketPos.x = rightTarget.x;
+				socketPos.y = rightTarget.y;
+				m_pBoard->SetMovingCompleted(TRUE, socketPos);
 			}
 			else {
+				m_pBoard->SetMovingCompleted(FALSE, socketPos);
 				if (movedCompleted == FALSE) {
 					m_pBoard->SetCompletedSlot(m_pBoard->GetCompletedSlot() + 1);
 					movedCompleted = TRUE;
@@ -136,11 +143,17 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 					m_pBoard->SetEmptySlot(m_pBoard->GetEmptySlot() - 1);
 					movedEmptySlot = TRUE;
 				}
+				
 				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 12.0, orgLeftTarget.x, m_fPeriod * 2.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 12.0, orgLeftTarget.y, m_fPeriod * 2.0 / 6.0, m_fGone);
+
+				socketPos.x = leftTarget.x;
+				socketPos.y = leftTarget.y;
+				m_pBoard->SetMovingEmpty(TRUE, socketPos);
 			}
 		}
 		else if (m_fGone <= m_fPeriod * 3.0 / 6.0) {
+			m_pBoard->SetMovingEmpty(FALSE, socketPos);
 			m_nAttachedItemNum = 0;
 			if (GetState() != ST_WORKER_set_circuit) {
 				SetState(ST_WORKER_set_circuit);
@@ -156,6 +169,12 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 				}
 				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 5.0 / 12.0, orgLeftTarget.x, m_fPeriod * 3.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 5.0 / 12.0, orgLeftTarget.y, m_fPeriod * 3.0 / 6.0, m_fGone);
+				
+				// move item 0
+				socketPos.x = leftTarget.x;
+				socketPos.y = leftTarget.y;
+				m_pBoard->SetMovingItem(TRUE, socketPos);
+
 			}
 		}
 		else if (m_fGone <= m_fPeriod * 4.0 / 6.0) {
@@ -163,6 +182,8 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			if (m_fGone <= m_fPeriod * 7.0 / 12.0) {
 				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 3.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 7.0 / 12.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 3.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 7.0 / 12.0, m_fGone);
+
+				m_pBoard->SetMovingItem(FALSE, socketPos);
 			}
 			else {
 				if (movedEmptyItem_1 == FALSE) {
@@ -171,6 +192,11 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 				}
 				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 7.0 / 12.0, orgLeftTarget.x, m_fPeriod * 4.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 7.0 / 12.0, orgLeftTarget.y, m_fPeriod * 4.0 / 6.0, m_fGone);
+
+				// move item 1
+				socketPos.x = leftTarget.x;
+				socketPos.y = leftTarget.y;
+				m_pBoard->SetMovingItem(TRUE, socketPos);
 			}
 		}
 		else if (m_fGone <= m_fPeriod * 5.0 / 6.0) {
@@ -178,6 +204,8 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			if (m_fGone <= m_fPeriod * 9.0 / 12.0) {
 				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 4.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 9.0 / 12.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 4.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 9.0 / 12.0, m_fGone);
+
+				m_pBoard->SetMovingItem(FALSE, socketPos);
 			}
 			else {
 				if (movedEmptyItem_2 == FALSE) {
@@ -186,6 +214,10 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 				}
 				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 9.0 / 12.0, orgLeftTarget.x, m_fPeriod * 5.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 9.0 / 12.0, orgLeftTarget.y, m_fPeriod * 5.0 / 6.0, m_fGone);
+				// move item 2
+				socketPos.x = leftTarget.x;
+				socketPos.y = leftTarget.y;
+				m_pBoard->SetMovingItem(TRUE, socketPos);
 			}
 		}
 		else if (m_fGone < m_fPeriod) {
@@ -193,6 +225,8 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			if (m_fGone <= m_fPeriod * 11.0 / 12.0) {
 				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 5.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 11.0 / 12.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 5.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 11.0 / 12.0, m_fGone);
+
+				m_pBoard->SetMovingItem(FALSE, socketPos);
 			}
 			else {
 				if (movedEmptyItem_3 == FALSE) {
@@ -201,10 +235,22 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 				}
 				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 11.0 / 12.0, orgLeftTarget.x, m_fPeriod * 6.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 11.0 / 12.0, orgLeftTarget.y, m_fPeriod * 6.0 / 6.0, m_fGone);
+			
+				// move item 3
+				socketPos.x = leftTarget.x;
+				socketPos.y = leftTarget.y;
+				m_pBoard->SetMovingItem(TRUE, socketPos);
 			}
 			m_fFinishPending = 0.0;
 		}
 		else {
+			POINT pos;
+			pos.x = 0;
+			pos.y = 0;
+			m_pBoard->SetMovingCompleted(FALSE, pos);
+			m_pBoard->SetMovingEmpty(FALSE, pos);
+			m_pBoard->SetMovingItem(FALSE, pos);
+
 			movedEmptySlot = FALSE;
 			movedCompleted = FALSE;
 			movedEmptyItem_0 = FALSE;

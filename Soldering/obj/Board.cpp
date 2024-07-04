@@ -8,6 +8,10 @@ Board::Board() {
 	m_nCompleted = 0;
 	m_nEmptySlot = SLOT_NUM;
 	m_nEmptyItem = 40;
+
+	m_bMovingCompleted = FALSE;
+	m_bMovingEmpty = FALSE;
+	m_bMovingItem = FALSE;
 }
 
 Board::Board(POINT pos, int radius, float period) {
@@ -18,9 +22,28 @@ Board::Board(POINT pos, int radius, float period) {
 	m_nEmptySlot = SLOT_NUM;
 	m_nEmptyItem = 40;
 	SetParameters(pos, radius, period);
+
+	m_bMovingCompleted = FALSE;
+	m_bMovingEmpty = FALSE;
+	m_bMovingItem = FALSE;
 }
 
 Board::~Board() {
+}
+
+void Board::SetMovingCompleted(BOOL visible, POINT pos) {
+	m_posMovingCompleted = pos;
+	m_bMovingCompleted = visible;
+}
+
+void Board::SetMovingEmpty(BOOL visible, POINT pos) {
+	m_posMovingEmpty = pos;
+	m_bMovingEmpty = visible;
+}
+
+void Board::SetMovingItem(BOOL visible, POINT pos) {
+	m_posMovingItem = pos;
+	m_bMovingItem = visible;
 }
 
 void Board::SetParameters(POINT pos, int radius, float period) {
@@ -156,7 +179,6 @@ void Board::TestPaint(Graphics* graphics, int w, int h) {
 	m_ActiveCircuit->TestPaint(graphics, w, h);
 	m_PendingCircuit->TestPaint(graphics, w, h);
 
-
 	SolidBrush lackBrush(Color(255, 0x8e, 0xb4, 0xe3));
 	graphics->FillRectangle(&lackBrush, X(m_position.x, w) - m_nRadius * 2, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
 	graphics->DrawRectangle(&pen1, X(m_position.x, w) - m_nRadius * 2, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
@@ -189,7 +211,7 @@ void Board::TestPaint(Graphics* graphics, int w, int h) {
 	}
 
 	CONT_:
-	// complete
+	
 	graphics->FillRectangle(&lackBrush, X(m_position.x, w) + m_nRadius, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
 	graphics->DrawRectangle(&pen1, X(m_position.x, w) + m_nRadius, Y(m_position.y - m_nRadius * 0.5, h), CIRCUIT_H(m_nRadius) * 5 + 10 * 6, CIRCUIT_W(m_nRadius) + 2 * 10);
 
@@ -204,5 +226,36 @@ void Board::TestPaint(Graphics* graphics, int w, int h) {
 			graphics->DrawRectangle(&redPen, X(x, w) + (CIRCUIT_H(m_nRadius) - width) / 2, Y(y + offset_y, h), width, height);
 			offset_y -= (height + offset);
 		}
+	}
+
+
+	// moving completed circuit
+	if (m_bMovingCompleted) {
+		int x = m_posMovingCompleted.x - CIRCUIT_W(m_nRadius) + 10;
+		int y = m_posMovingCompleted.y;
+		graphics->FillRectangle(&whiteBrush, X(x, w), Y(y, h), CIRCUIT_W(m_nRadius), CIRCUIT_H(m_nRadius));
+		graphics->DrawRectangle(&pen2, X(x, w), Y(y, h), CIRCUIT_W(m_nRadius), CIRCUIT_H(m_nRadius));
+
+		int offset_x = offset;
+		for (int j = 0; j < SOLDER_PNT; j++) {
+			graphics->DrawRectangle(&redPen, X(x, w) + offset_x, Y(y, h) + +(CIRCUIT_H(m_nRadius) - height) / 2, width, height);
+			offset_x += (width + offset);
+		}
+	}
+
+	// moving empty circuit
+	if (m_bMovingEmpty) {
+		int x = m_posMovingEmpty.x;
+		int y = m_posMovingEmpty.y;
+		graphics->FillRectangle(&whiteBrush, X(x, w), Y(y, h), CIRCUIT_W(m_nRadius), CIRCUIT_H(m_nRadius));
+		graphics->DrawRectangle(&pen2, X(x, w), Y(y, h), CIRCUIT_W(m_nRadius), CIRCUIT_H(m_nRadius));
+	}
+
+	// moving item
+	if (m_bMovingItem) {
+		int x = m_posMovingItem.x + width;
+		int y = m_posMovingItem.y - height;
+		graphics->FillRectangle(&whiteBrush, X(x, w), Y(y, h), width, height);
+		graphics->DrawRectangle(&pen2, X(x, w), Y(y, h), width, height);
 	}
 }
