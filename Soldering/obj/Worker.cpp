@@ -54,7 +54,10 @@ void Worker::SetParameters(POINT posHead, int headRadius) {
 	m_rightArm.SetParameters(pos, m_nArmLength_0, m_nArmLength_1, TRUE);
 }
 
+
+// for arm
 void DrawRotatedEllipse(Graphics* graphics, SolidBrush& brush, RectF& rect, float angle) {
+	// just draw ellipse around joint arms
 	PointF center(rect.X, rect.Y + rect.Height / 2);
 
 	GraphicsPath path;
@@ -81,9 +84,11 @@ BOOL movedEmptyItem_2 = FALSE;
 BOOL movedEmptyItem_3 = FALSE;
 
 void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
+	// person body
 	SolidBrush brushBody(Color(255, 0x4f, 0x81, 0xbd));
 	graphics->FillEllipse(&brushBody, X(m_posBody.x, w) - m_nBodyWidth, Y(m_posBody.y, h) + m_nBodyHeight, m_nBodyWidth * 2, m_nBodyHeight * 2);
 
+	// person head
 	SolidBrush brush(Color(255, 0, 0, 0));
 	graphics->FillEllipse(&brush, X(m_posHead.x, w) - m_nHeadRadius * 0.9, Y(m_posHead.y, h) + m_nHeadRadius, m_nHeadRadius * 0.9 * 2, m_nHeadRadius * 2);
 	Pen pen(Color(255, 0x38, 0x5d, 0x8a), 3);
@@ -93,10 +98,12 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 	POINT orgLeftTarget;
 	POINT orgRightTarget;
 
+	// start point for left arm
 	m_leftArm.GetPositions(org, middle, target);
 	orgLeftTarget.x = org.x + m_nHeadRadius * 2;
 	orgLeftTarget.y = org.y + m_nHeadRadius * 4.5;
 
+	// start point for right arm
 	m_rightArm.GetPositions(org, middle, target);
 	orgRightTarget.x = org.x - m_nHeadRadius * 2;
 	orgRightTarget.y = org.y + m_nHeadRadius * 4.5;
@@ -115,6 +122,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 		m_fGone += dt;
 		if (m_fGone <= m_fPeriod / 6.0) {
 			SetState(ST_WORKER_removing);
+			// move right arm to remove completed circuit
 			if (m_fGone <= m_fPeriod / 12.0) {
 				rightTarget.x = linePoint(orgRightTarget.x, 0, orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 12.0, m_fGone);
 				rightTarget.y = linePoint(orgRightTarget.y, 0, orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 12.0, m_fGone);
@@ -134,6 +142,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			}
 		}
 		else if (m_fGone <= m_fPeriod * 2.0 / 6.0) {
+			// move left arm to attach empty circuit
 			if (m_fGone <= m_fPeriod * 3.0 / 12.0) {
 				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 1.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 12.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 1.0 / 6.0, orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 12.0, m_fGone);
@@ -153,6 +162,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			}
 		}
 		else if (m_fGone <= m_fPeriod * 3.0 / 6.0) {
+			// move left arm to attach 1st item
 			m_pBoard->SetMovingEmpty(FALSE, socketPos);
 			m_nAttachedItemNum = 0;
 			if (GetState() != ST_WORKER_set_circuit) {
@@ -178,6 +188,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			}
 		}
 		else if (m_fGone <= m_fPeriod * 4.0 / 6.0) {
+			// move left arm to attach 2nd item
 			m_nAttachedItemNum = 1;
 			if (m_fGone <= m_fPeriod * 7.0 / 12.0) {
 				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 3.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 7.0 / 12.0, m_fGone);
@@ -200,6 +211,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			}
 		}
 		else if (m_fGone <= m_fPeriod * 5.0 / 6.0) {
+			// move left arm to attach 3rd item
 			m_nAttachedItemNum = 2;
 			if (m_fGone <= m_fPeriod * 9.0 / 12.0) {
 				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 4.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 9.0 / 12.0, m_fGone);
@@ -221,6 +233,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			}
 		}
 		else if (m_fGone < m_fPeriod) {
+			// move left arm to attach 4th item
 			m_nAttachedItemNum = 3;
 			if (m_fGone <= m_fPeriod * 11.0 / 12.0) {
 				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 5.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 11.0 / 12.0, m_fGone);
@@ -247,6 +260,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			POINT pos;
 			pos.x = 0;
 			pos.y = 0;
+			// remove moving animation
 			m_pBoard->SetMovingCompleted(FALSE, pos);
 			m_pBoard->SetMovingEmpty(FALSE, pos);
 			m_pBoard->SetMovingItem(FALSE, pos);
@@ -261,14 +275,18 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			m_nAttachedItemNum = 4;
 			SetState(ST_WORKER_fill_circuit);
 			m_fFinishPending += dt;
+			// wait 500ms after person work finished
 			if (m_fFinishPending >= 500) {
 				if (m_pBoard->GetCompletedSlot() >= SLOT_NUM) {
+					// if lack for completed circuit is full, clear (right lack)
 					m_pBoard->SetCompletedSlot(0);
 				}
 				if (m_pBoard->GetEmptySlot() <= 0) {
+					// if lack for empty circuit is empty, fill again (left top lack)
 					m_pBoard->SetEmptySlot(SLOT_NUM);
 				}
 				if (m_pBoard->GetEmptyItem() <= 0) {
+					// if lack for small item is empty, fill again (left bottom lack)
 					m_pBoard->SetEmptyItem(40);
 				}
 				SetState(ST_WORKER_finished);
@@ -276,6 +294,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 		}
 	}
 
+	// draw right arm
 	m_rightArm.SetTarget(rightTarget);
 	m_rightArm.GetPositions(org, middle, target);
 	RectF rect2(X(org.x, w), Y(org.y, h), distance(middle, org), 32);
@@ -283,6 +302,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 	RectF rect3(X(middle.x, w), Y(middle.y, h), distance(middle, target), 28);
 	DrawRotatedEllipse(graphics, brushBody, rect3, atan2(target.y - middle.y, target.x - middle.x));
 
+	// draw left arm
 	m_leftArm.SetTarget(leftTarget);
 	m_leftArm.GetPositions(org, middle, target);
 	RectF rect(X(org.x, w), Y(org.y, h), distance(middle, org), 32);
