@@ -4,9 +4,9 @@
 #include <cmath>
 #pragma comment (lib,"Gdiplus.lib")
 
-#include "obj/Worker.h"
+#include "obj/arm.h"
 #include "obj/Board.h"
-#include "obj/Solder.h"
+#include "obj/rob.h"
 #include "obj/Automate.h"
 
 using namespace Gdiplus;

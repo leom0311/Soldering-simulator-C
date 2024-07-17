@@ -1,9 +1,9 @@
 #pragma once
 
 #include "types.h"
-#include "Worker.h"
+#include "arm.h"
 #include "Board.h"
-#include "Solder.h"
+#include "rob.h"
 
 class Automate {
 private:

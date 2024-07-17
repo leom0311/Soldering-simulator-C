@@ -1,4 +1,4 @@
-#include "Worker.h"
+#include "arm.h"
 #include <windows.h>
 #include <math.h>
 
@@ -124,8 +124,8 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			SetState(ST_WORKER_removing);
 			// move right arm to remove completed circuit
 			if (m_fGone <= m_fPeriod / 12.0) {
-				rightTarget.x = linePoint(orgRightTarget.x, 0, orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 12.0, m_fGone);
-				rightTarget.y = linePoint(orgRightTarget.y, 0, orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 12.0, m_fGone);
+				rightTarget.x = linePoint(orgRightTarget.x, 0, orgRightTarget.x + m_nHeadRadius * 3.0, m_fPeriod / 12.0, m_fGone);
+				rightTarget.y = linePoint(orgRightTarget.y, 0, orgRightTarget.y - m_nHeadRadius * 0.9, m_fPeriod / 12.0, m_fGone);
 
 				socketPos.x = rightTarget.x;
 				socketPos.y = rightTarget.y;
@@ -137,15 +137,15 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 					m_pBoard->SetCompletedSlot(m_pBoard->GetCompletedSlot() + 1);
 					movedCompleted = TRUE;
 				}
-				rightTarget.x = linePoint(orgRightTarget.x + m_nHeadRadius * 2, m_fPeriod / 12.0, orgRightTarget.x, m_fPeriod / 6.0, m_fGone);
-				rightTarget.y = linePoint(orgRightTarget.y + m_nHeadRadius * 0.5, m_fPeriod / 12.0, orgRightTarget.y, m_fPeriod / 6.0, m_fGone);
+				rightTarget.x = linePoint(orgRightTarget.x + m_nHeadRadius * 3.0, m_fPeriod / 12.0, orgRightTarget.x, m_fPeriod / 6.0, m_fGone);
+				rightTarget.y = linePoint(orgRightTarget.y - m_nHeadRadius * 0.9, m_fPeriod / 12.0, orgRightTarget.y, m_fPeriod / 6.0, m_fGone);
 			}
 		}
 		else if (m_fGone <= m_fPeriod * 2.0 / 6.0) {
 			// move left arm to attach empty circuit
 			if (m_fGone <= m_fPeriod * 3.0 / 12.0) {
-				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 1.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 12.0, m_fGone);
-				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 1.0 / 6.0, orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 12.0, m_fGone);
+				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 1.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 3.0, m_fPeriod * 3.0 / 12.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 1.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 12.0, m_fGone);
 			}
 			else {
 				if (movedEmptySlot == FALSE) {
@@ -153,8 +153,8 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 					movedEmptySlot = TRUE;
 				}
 				
-				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 3.0 / 12.0, orgLeftTarget.x, m_fPeriod * 2.0 / 6.0, m_fGone);
-				leftTarget.y = linePoint(orgLeftTarget.y + m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 12.0, orgLeftTarget.y, m_fPeriod * 2.0 / 6.0, m_fGone);
+				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 3.0, m_fPeriod * 3.0 / 12.0, orgLeftTarget.x, m_fPeriod * 2.0 / 6.0, m_fGone);
+				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 0.5, m_fPeriod * 3.0 / 12.0, orgLeftTarget.y, m_fPeriod * 2.0 / 6.0, m_fGone);
 
 				socketPos.x = leftTarget.x;
 				socketPos.y = leftTarget.y;
@@ -177,7 +177,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 					m_pBoard->SetEmptyItem(m_pBoard->GetEmptyItem() - 1);
 					movedEmptyItem_0 = TRUE;
 				}
-				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 5.0 / 12.0, orgLeftTarget.x, m_fPeriod * 3.0 / 6.0, m_fGone);
+				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 5.0 / 12.0, orgLeftTarget.x + m_nHeadRadius * 0.8, m_fPeriod * 3.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 5.0 / 12.0, orgLeftTarget.y, m_fPeriod * 3.0 / 6.0, m_fGone);
 				
 				// move item 0
@@ -191,7 +191,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			// move left arm to attach 2nd item
 			m_nAttachedItemNum = 1;
 			if (m_fGone <= m_fPeriod * 7.0 / 12.0) {
-				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 3.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 7.0 / 12.0, m_fGone);
+				leftTarget.x = linePoint(orgLeftTarget.x + m_nHeadRadius * 0.8, m_fPeriod * 3.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 7.0 / 12.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 3.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 7.0 / 12.0, m_fGone);
 
 				m_pBoard->SetMovingItem(FALSE, socketPos);
@@ -201,7 +201,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 					m_pBoard->SetEmptyItem(m_pBoard->GetEmptyItem() - 1);
 					movedEmptyItem_1 = TRUE;
 				}
-				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 7.0 / 12.0, orgLeftTarget.x, m_fPeriod * 4.0 / 6.0, m_fGone);
+				leftTarget.x = linePoint(orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 7.0 / 12.0, orgLeftTarget.x + m_nHeadRadius * 0.7, m_fPeriod * 4.0 / 6.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 7.0 / 12.0, orgLeftTarget.y, m_fPeriod * 4.0 / 6.0, m_fGone);
 
 				// move item 1
@@ -214,7 +214,7 @@ void Worker::Update(DWORD dt, Graphics *graphics, int w, int h) {
 			// move left arm to attach 3rd item
 			m_nAttachedItemNum = 2;
 			if (m_fGone <= m_fPeriod * 9.0 / 12.0) {
-				leftTarget.x = linePoint(orgLeftTarget.x, m_fPeriod * 4.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 9.0 / 12.0, m_fGone);
+				leftTarget.x = linePoint(orgLeftTarget.x + m_nHeadRadius * 0.7, m_fPeriod * 4.0 / 6.0, orgLeftTarget.x - m_nHeadRadius * 2, m_fPeriod * 9.0 / 12.0, m_fGone);
 				leftTarget.y = linePoint(orgLeftTarget.y, m_fPeriod * 4.0 / 6.0, orgLeftTarget.y - m_nHeadRadius * 1.2, m_fPeriod * 9.0 / 12.0, m_fGone);
 
 				m_pBoard->SetMovingItem(FALSE, socketPos);

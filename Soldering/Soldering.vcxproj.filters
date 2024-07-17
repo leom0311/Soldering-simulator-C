@@ -42,10 +42,10 @@
     <ClInclude Include="obj\Board.h">
       <Filter>Source Files\obj</Filter>
     </ClInclude>
-    <ClInclude Include="obj\Worker.h">
+    <ClInclude Include="obj\arm.h">
       <Filter>Source Files\obj</Filter>
     </ClInclude>
-    <ClInclude Include="obj\Solder.h">
+    <ClInclude Include="obj\rob.h">
       <Filter>Source Files\obj</Filter>
     </ClInclude>
     <ClInclude Include="obj\Automate.h">
@@ -65,10 +65,10 @@
     <ClCompile Include="obj\Board.cpp">
       <Filter>Source Files\obj</Filter>
     </ClCompile>
-    <ClCompile Include="obj\Worker.cpp">
+    <ClCompile Include="obj\arm.cpp">
       <Filter>Source Files\obj</Filter>
     </ClCompile>
-    <ClCompile Include="obj\Solder.cpp">
+    <ClCompile Include="obj\rob.cpp">
       <Filter>Source Files\obj</Filter>
     </ClCompile>
     <ClCompile Include="obj\Automate.cpp">
